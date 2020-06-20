@@ -1,4 +1,10 @@
+// дебаг в браузере Ctrl + Shift + I, вкладка Network
+// http://localhost:8080/topjava/
+// request.getParameterMap() - пары ключ-значение get запроса из адресной строки
+
 package ru.javawebinar.topjava.web;
+
+import org.slf4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -6,12 +12,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-// дебаг в браузере Ctrl + Shift + I, вкладка Network
-// http://localhost:8080/topjava/
+import static org.slf4j.LoggerFactory.getLogger;
+
 public class UserServlet extends HttpServlet {
 
-    @Override // request.getParameterMap() - пары ключ-значение запросов из адресной строки
+    private static final Logger log = getLogger(UserServlet.class);
+
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        log.debug("redirect to users");
+
 //        request.getRequestDispatcher("/users.jsp").forward(request, response);
         response.sendRedirect("users.jsp"); // запрос идёт через браузер
     }
