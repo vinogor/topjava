@@ -9,9 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-
-import static ru.javawebinar.topjava.util.MealsUtil.MEALS_HARDCODE;
 
 public class MealDaoInMemoryImpl implements MealDao {
 
@@ -26,19 +23,10 @@ public class MealDaoInMemoryImpl implements MealDao {
     public MealDaoInMemoryImpl() {
         this.store = new ConcurrentSkipListMap<>();
         this.lastId = new AtomicInteger(0);
-        tempInit();
-    }
-
-    private void tempInit() {
-        Map<Integer, Meal> tempMap = MEALS_HARDCODE.stream()
-                .collect(Collectors.toMap(Meal::getId, meal -> meal));
-        this.store.putAll(tempMap);
-        lastId.updateAndGet(c -> c + MEALS_HARDCODE.size());
-        log.debug("lastId = " + lastId);
     }
 
     @Override
-    public void create(Meal meal) {
+    public synchronized void create(Meal meal) {
         log.debug("create");
         meal.setId(lastId.get() + 1);
         store.put(lastId.get() + 1, meal);
@@ -55,10 +43,6 @@ public class MealDaoInMemoryImpl implements MealDao {
     @Override
     public void update(Meal meal) {
         log.debug("update");
-
-        // "Если при обновлении не создавать копию,
-        // то сохраненный в памяти объект может кто-то попортить."
-        // --> я верно понял ?
         store.put(meal.getId(), new Meal(meal));
     }
 
@@ -66,8 +50,6 @@ public class MealDaoInMemoryImpl implements MealDao {
     public void delete(int id) {
         log.debug("delete");
         store.remove(id);
-//        убрал, чтобы при создании после удаления - не перетирало имеющуюся запись
-//        counter.decrementAndGet();
         log.debug("lastId = " + lastId);
     }
 

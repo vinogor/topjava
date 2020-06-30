@@ -6,16 +6,13 @@ import java.time.LocalTime;
 
 public class Meal {
 
-    // убрал final так как надо часто редактировать поля
-    // а пересоздавать объект каждый раз - выглядит громоздко
-
     private int id;
 
-    private LocalDateTime dateTime;
+    private final LocalDateTime dateTime;
 
-    private String description;
+    private final String description;
 
-    private int calories;
+    private final int calories;
 
     public Meal(int id, LocalDateTime dateTime, String description, int calories) {
         this.id = id;
@@ -25,16 +22,11 @@ public class Meal {
     }
 
     public Meal(LocalDateTime dateTime, String description, int calories) {
-        this.dateTime = dateTime;
-        this.description = description;
-        this.calories = calories;
+        this(0, dateTime, description, calories);
     }
 
     public Meal(Meal meal) {
-        this.id = meal.getId();
-        this.dateTime = meal.getDateTime();
-        this.description = meal.getDescription();
-        this.calories = meal.getCalories();
+        this(meal.getId(), meal.getDateTime(), meal.getDescription(), meal.getCalories());
     }
 
     public int getId() {
@@ -63,18 +55,6 @@ public class Meal {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public void setDateTime(LocalDateTime dateTime) {
-        this.dateTime = dateTime;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setCalories(int calories) {
-        this.calories = calories;
     }
 
     @Override

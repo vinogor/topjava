@@ -18,18 +18,6 @@
         <url-pattern>/users</url-pattern>
     </servlet-mapping>
 
-    <!-- статический список всех приёмов пищи -->
-    <servlet>
-        <servlet-name>mealServlet</servlet-name>
-        <servlet-class>ru.javawebinar.topjava.web.MealServlet</servlet-class>
-        <load-on-startup>0</load-on-startup>
-    </servlet>
-
-    <servlet-mapping>
-        <servlet-name>mealServlet</servlet-name>
-        <url-pattern>/meals</url-pattern>
-    </servlet-mapping>
-
     <!-- CRUD список всех приёмов пищи -->
     <servlet>
         <servlet-name>mealCrudServlet</servlet-name>

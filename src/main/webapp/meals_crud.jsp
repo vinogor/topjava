@@ -36,7 +36,6 @@
         TR.exceed {
             background: #fab5b9; /* цвет фона когда превышение */
         }
-
     </style>
 
 </head>
@@ -47,11 +46,11 @@
 
 <table>
     <tr>
-        <th>id</th>
+        <%--        <th>id</th>--%>
         <th>дата время</th>
         <th>описание</th>
         <th>калории</th>
-        <th>превышение</th>
+        <%--        <th>превышение</th>--%>
         <th>редактировать</th>
         <th>удалить</th>
     </tr>
@@ -67,13 +66,13 @@
     <c:forEach var="meal" items="${meals}">
         <%-- задаём цвет строки в зависимости от превышения --%>
         <tr class=${ meal.excess == true ? "exceed" : "none"}>
-            <td><c:out value="${meal.id}"/></td>
-                <%-- костыльный вариант --%>
+                <%-- <td><c:out value="${meal.id}"/></td>--%>
+                <%-- костыльный вариант: --%>
                 <%-- <td><c:out value="${fn:replace(meal.dateTime, 'T', ', ')}"/></td>  --%>
             <td><javatime:format value="${meal.dateTime}" pattern="uuuu-MM-dd', 'HH:mm"/></td>
             <td><c:out value="${meal.description}"/></td>
             <td><c:out value="${meal.calories}"/></td>
-            <td><c:out value="${meal.excess}"/></td>
+                <%-- <td><c:out value="${meal.excess}"/></td>--%>
             <td><a href="meals_crud?action=edit&id=<c:out value="${meal.id}"/>">Update</a></td>
             <td><a href="meals_crud?action=delete&id=<c:out value="${meal.id}"/>">Delete</a></td>
         </tr>

@@ -10,19 +10,17 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
 
-import static ru.javawebinar.topjava.util.MealsUtil.filteredByStreams;
+import static ru.javawebinar.topjava.util.MealsUtil.*;
 
 public class MealCrudServlet extends HttpServlet {
 
     private static final Logger log = LoggerFactory.getLogger(MealCrudServlet.class);
 
     private static final long serialVersionUID = 1L;
-    public static final int CALORIES_PER_DAY = 2000;
     private static final String INSERT_OR_EDIT = "/insert_or_edit_meal.jsp";
     private static final String MEALS_TO = "/meals_crud.jsp";
 
@@ -40,45 +38,45 @@ public class MealCrudServlet extends HttpServlet {
     // within the same request. For example - you set an attribute in a servlet, and read it from a JSP.
     // Can be used for any object, not just string.
 
+    @Override
+    public void init() throws ServletException {
+        super.init();
+        MEALS_HARDCODE.forEach(m -> dao.create(m));
+    }
+
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         log.debug("start doGet");
-        String forward = "";
+        String forward = MEALS_TO;
         String action = request.getParameter("action");
         action = action == null ? "" : action; // чтобы не ловить NPE при пустом запросе
 
-        // delete + getAll
-        if (action.equalsIgnoreCase("delete")) {
-            log.debug("doGet - delete");
-            int id = Integer.parseInt(request.getParameter("id"));
-            dao.delete(id);
-            request.setAttribute("meals", filteredByStreams(dao.getAll(), CALORIES_PER_DAY));
-            forward = MEALS_TO;
-
-            // read
-        } else if (action.equalsIgnoreCase("edit")) {
-            log.debug("doGet - edit");
-            int id = Integer.parseInt(request.getParameter("id"));
-            Meal meal = dao.read(id);
-            request.setAttribute("meal", meal);
-            forward = INSERT_OR_EDIT;
-
-            // getAll
-        } else if (action.equalsIgnoreCase("list")) {
-            log.debug("doGet - list");
-            request.setAttribute("meals", filteredByStreams(dao.getAll(), CALORIES_PER_DAY));
-            forward = MEALS_TO;
-
-            // insert
-        } else if (action.equalsIgnoreCase("insert")) {
-            log.debug("doGet - insert");
-            forward = INSERT_OR_EDIT;
-
-            // пустой или нераспознанный параметр action у get запроса --> getAll
-            // при редиректе без параметров?
-        } else {
-            log.debug("doGet - empty ( -> list)");
-            request.setAttribute("meals", filteredByStreams(dao.getAll(), CALORIES_PER_DAY));
-            forward = MEALS_TO;
+        switch (action) {
+            case ("delete"):
+                log.debug("doGet - delete");
+                dao.delete(parseIntParameter(request, "id"));
+                response.sendRedirect("meals_crud");
+                return;
+            case ("edit"): {
+                log.debug("doGet - edit");
+                Meal meal = dao.read(parseIntParameter(request, "id"));
+                request.setAttribute("meal", meal);
+                forward = INSERT_OR_EDIT;
+                break;
+            }
+            case ("list"): {
+                log.debug("doGet - list");
+                setAttributeMeals(request);
+                break;
+            }
+            case ("insert"): {
+                log.debug("doGet - insert");
+                forward = INSERT_OR_EDIT;
+                break;
+            }
+            default:
+                log.debug("doGet - empty ( -> list)");
+                setAttributeMeals(request);
+                break;
         }
 
         RequestDispatcher view = request.getRequestDispatcher(forward);
@@ -93,22 +91,34 @@ public class MealCrudServlet extends HttpServlet {
                 // DateTimeFormatter.ISO_LOCAL_DATE_TIME - идёт по дефолту
                 LocalDateTime.parse(request.getParameter("dateTime")),
                 request.getParameter("description"),
-                Integer.parseInt(request.getParameter("calories"))
+                parseIntParameter(request, "calories")
         );
 
-        String id = request.getParameter("id");
-        if (id == null || id.isEmpty()) {
+        int id = parseIntParameter(request, "id");
+
+        if (id <= -1) {
             log.debug("doPost - create");
             dao.create(meal);
         } else {
             log.debug("doPost - update");
-            meal.setId(Integer.parseInt(id));
+            meal.setId(id);
             dao.update(meal);
         }
 
         RequestDispatcher view = request.getRequestDispatcher(MEALS_TO);
-        request.setAttribute("meals", filteredByStreams(dao.getAll(), CALORIES_PER_DAY));
+        setAttributeMeals(request);
         view.forward(request, response);
+    }
 
+    private void setAttributeMeals(HttpServletRequest request) {
+        request.setAttribute("meals", filteredByStreams(dao.getAll(), CALORIES_PER_DAY));
+    }
+
+    private int parseIntParameter(HttpServletRequest request, String parameter) {
+        String str = request.getParameter(parameter);
+        if (str == null || str.isEmpty()) {
+            return -1;
+        }
+        return Integer.parseInt(str);
     }
 }

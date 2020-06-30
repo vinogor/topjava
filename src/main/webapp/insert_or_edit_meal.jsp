@@ -5,37 +5,77 @@
 <html>
 <head>
     <title>Add new user</title>
+
+    <style type="text/css">
+        TABLE {
+            border-collapse: collapse; /* убираем двойные линии между ячейками */
+        }
+
+        TH {
+            background: #b0e0e6; /* цвет фона шапки */
+        }
+
+        TD, TH {
+            padding: 5px; /* отступы внутри ячеек */
+            border: 1px solid; /* чтобы рамка отображалась */
+        }
+    </style>
+
 </head>
 <body>
 
-Add or create meal
+<h2>Add or create meal</h2>
 
 <%-- если прописать закомменченый тэг, то будет ошибка когда [addMeal], так как в атрибутах не будет такого бина --%>
 <%-- <jsp:useBean id="meal" scope="request" type="ru.javawebinar.topjava.model.Meal"/>--%>
 
 <form method="POST" action='meals_crud' name="frmEditOrCreateMeal">
 
-    id : <input
-        type="text" name="id"
-        value="<c:out value="${meal.id}" />"/> <br/>
+    <table>
 
-    dateTime : <input
-        type="datetime-local" name="dateTime"
-        value="<c:out value="${meal.dateTime}" />"/> <br/>
+        <tr>
+            <th>параметр</th>
+            <th>поле ввода</th>
+        </tr>
 
-    <%-- вариант со вводом даты и времени вручную --%>
-    <%--    <input--%>
-    <%--        type="text" name="dateTime"--%>
-    <%--        value="<c:out value="${meal.dateTime}" />"/> <br/> --%>
+        <tr>
+            <td> id :</td>
+            <td><input
+                    type="text" name="id"
+                    value="<c:out value="${meal.id}" />"/></td>
+        </tr>
 
-    description : <input
-        type=" text" name="description"
-        value="<c:out value="${meal.description}"/>"/> <br/>
+        <tr>
+            <td> dateTime :</td>
+            <td><input
+                    type="datetime-local" name="dateTime"
+                    value="<c:out value="${meal.dateTime}" />"/>
+            </td>
+        </tr>
 
-    calories : <input
-        type="text" name="calories"
-        value="<c:out value="${meal.calories}" />"/> <br/>
+        <%-- вариант со вводом даты и времени вручную --%>
+        <%--    <input--%>
+        <%--        type="text" name="dateTime"--%>
+        <%--        value="<c:out value="${meal.dateTime}" />"/> <br/> --%>
 
+        <tr>
+            <td> description :</td>
+            <td><input
+                    type="text" name="description"
+                    value="<c:out value="${meal.description}"/>"/>
+            </td>
+        </tr>
+
+        <tr>
+            <td> calories :</td>
+            <td><input
+                    type="text" name="calories"
+                    value="<c:out value="${meal.calories}" />"/>
+            </td>
+        </tr>
+    </table>
+
+    <br>
     <button type="submit"> Submit</button>
 
 </form>
