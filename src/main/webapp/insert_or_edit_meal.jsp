@@ -27,12 +27,11 @@
             <th>поле ввода</th>
         </tr>
 
-        <tr>
+        <tr hidden>
             <td> id :</td>
             <td><input
                     type="text" readonly name="id"
                     value="<c:out value="${meal.id}" />"
-                    placeholder="new id"
             />
             </td>
         </tr>
