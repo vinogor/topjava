@@ -1,0 +1,27 @@
+
+/*
+    TD - Table Data
+    TH - Table Header
+    TR - Table Row
+*/
+
+TABLE {
+    border-collapse: collapse; /* убираем двойные линии между ячейками */
+}
+
+TH {
+    background: #b0e0e6; /* цвет фона шапки */
+}
+
+TD, TH {
+    padding: 5px; /* отступы внутри ячеек */
+    border: 1px solid; /* чтобы рамка отображалась */
+}
+
+TR.notExceed {
+    background: #cfffb2; /* цвет фона когда НЕТ превышения (дефолт) */
+}
+
+TR.exceed {
+    background: #fab5b9; /* цвет фона когда превышение */
+}

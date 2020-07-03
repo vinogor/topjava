@@ -26,11 +26,6 @@ public class MealCrudServlet extends HttpServlet {
 
     private MealDao dao;
 
-    public MealCrudServlet() {
-        super(); // зачем??
-        dao = new MealDaoInMemoryImpl();
-    }
-
     // --> getParameter() returns http request parameters. Those passed from the client to the server.
     // For example http://example.com/servlet?parameter=1. Can only return String
     //
@@ -41,7 +36,7 @@ public class MealCrudServlet extends HttpServlet {
     @Override
     public void init() throws ServletException {
         super.init();
-        MEALS_HARDCODE.forEach(m -> dao.create(m));
+        dao = new MealDaoInMemoryImpl();
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -61,11 +56,6 @@ public class MealCrudServlet extends HttpServlet {
                 Meal meal = dao.read(parseIntParameter(request, "id"));
                 request.setAttribute("meal", meal);
                 forward = INSERT_OR_EDIT;
-                break;
-            }
-            case ("list"): {
-                log.debug("doGet - list");
-                setAttributeMeals(request);
                 break;
             }
             case ("insert"): {

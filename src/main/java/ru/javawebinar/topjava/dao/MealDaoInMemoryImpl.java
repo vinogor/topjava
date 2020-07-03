@@ -9,6 +9,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+
+import static ru.javawebinar.topjava.util.MealsUtil.MEALS_HARDCODE;
 
 public class MealDaoInMemoryImpl implements MealDao {
 
@@ -23,15 +26,25 @@ public class MealDaoInMemoryImpl implements MealDao {
     public MealDaoInMemoryImpl() {
         this.store = new ConcurrentSkipListMap<>();
         this.lastId = new AtomicInteger(0);
+        init();
+    }
+
+    private void init() {
+        Map<Integer, Meal> tempMap = MEALS_HARDCODE.stream()
+                .collect(Collectors.toMap(Meal::getId, meal -> meal));
+        this.store.putAll(tempMap);
+        lastId.updateAndGet(c -> c + MEALS_HARDCODE.size());
+        log.debug("lastId = " + lastId);
     }
 
     @Override
-    public synchronized void create(Meal meal) {
+    public void create(Meal meal) {
         log.debug("create");
-        meal.setId(lastId.get() + 1);
-        store.put(lastId.get() + 1, meal);
         lastId.incrementAndGet();
-        log.debug("lastId = " + lastId);
+        int localLastId = this.lastId.get();
+        meal.setId(localLastId);
+        store.put(localLastId, meal);
+        log.debug("lastId = " + localLastId);
     }
 
     @Override
@@ -49,8 +62,9 @@ public class MealDaoInMemoryImpl implements MealDao {
     @Override
     public void delete(int id) {
         log.debug("delete");
+        int localLastId = this.lastId.get();
         store.remove(id);
-        log.debug("lastId = " + lastId);
+        log.debug("lastId = " + localLastId);
     }
 
     @Override

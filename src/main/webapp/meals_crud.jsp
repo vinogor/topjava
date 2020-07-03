@@ -4,39 +4,11 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib prefix="javatime" uri="http://sargue.net/jsptags/time" %>
 
-
 <html lang="ru">
 <head>
+
     <title>meals crud</title>
-
-    <%--
-        TD - Table Data
-        TH - Table Header
-        TR - Table Row
-    --%>
-
-    <style type="text/css">
-        TABLE {
-            border-collapse: collapse; /* убираем двойные линии между ячейками */
-        }
-
-        TH {
-            background: #b0e0e6; /* цвет фона шапки */
-        }
-
-        TD, TH {
-            padding: 5px; /* отступы внутри ячеек */
-            border: 1px solid; /* чтобы рамка отображалась */
-        }
-
-        TR {
-            background: #cfffb2; /* цвет фона когда НЕТ превышения (дефолт) */
-        }
-
-        TR.exceed {
-            background: #fab5b9; /* цвет фона когда превышение */
-        }
-    </style>
+    <link rel="stylesheet" href="myStyle.css" type="text/css">
 
 </head>
 <body>
@@ -65,7 +37,7 @@
 
     <c:forEach var="meal" items="${meals}">
         <%-- задаём цвет строки в зависимости от превышения --%>
-        <tr class=${ meal.excess == true ? "exceed" : "none"}>
+        <tr class=${ meal.excess == true ? "exceed" : "notExceed"}>
                 <%-- <td><c:out value="${meal.id}"/></td>--%>
                 <%-- костыльный вариант: --%>
                 <%-- <td><c:out value="${fn:replace(meal.dateTime, 'T', ', ')}"/></td>  --%>
