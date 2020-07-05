@@ -40,8 +40,7 @@ public class MealDaoInMemoryImpl implements MealDao {
     @Override
     public void create(Meal meal) {
         log.debug("create");
-        lastId.incrementAndGet();
-        int localLastId = this.lastId.get();
+        int localLastId = lastId.incrementAndGet();
         meal.setId(localLastId);
         store.put(localLastId, meal);
         log.debug("lastId = " + localLastId);
@@ -64,6 +63,7 @@ public class MealDaoInMemoryImpl implements MealDao {
         log.debug("delete");
         int localLastId = this.lastId.get();
         store.remove(id);
+        log.debug("deleted id = " + id);
         log.debug("lastId = " + localLastId);
     }
 
