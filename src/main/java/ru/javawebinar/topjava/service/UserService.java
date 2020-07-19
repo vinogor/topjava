@@ -1,6 +1,5 @@
 package ru.javawebinar.topjava.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
@@ -20,15 +19,20 @@ public class UserService {
     }
 
     public User create(User user) {
+        // проверка на новизну в контроллере
         return repository.save(user);
-    }
-
-    public void delete(int id) {
-        checkNotFoundWithId(repository.delete(id), id);
     }
 
     public User get(int id) {
         return checkNotFoundWithId(repository.get(id), id);
+    }
+
+    public void update(User user) {
+        checkNotFoundWithId(repository.save(user), user.getId());
+    }
+
+    public void delete(int id) {
+        checkNotFoundWithId(repository.delete(id), id);
     }
 
     public User getByEmail(String email) {
@@ -37,9 +41,5 @@ public class UserService {
 
     public List<User> getAll() {
         return repository.getAll();
-    }
-
-    public void update(User user) {
-        checkNotFoundWithId(repository.save(user), user.getId());
     }
 }

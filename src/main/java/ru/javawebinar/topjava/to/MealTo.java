@@ -1,8 +1,9 @@
-package ru.javawebinar.topjava.model;
+package ru.javawebinar.topjava.to;
 
 import java.time.LocalDateTime;
 
 public class MealTo {
+
     private final Integer id;
 
     private final LocalDateTime dateTime;
@@ -43,7 +44,7 @@ public class MealTo {
 
     @Override
     public String toString() {
-        return "MealTo{" +
+        return  "\n" + "         ---> MealTo{" +
                 "id=" + id +
                 ", dateTime=" + dateTime +
                 ", description='" + description + '\'' +

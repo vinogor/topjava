@@ -4,7 +4,15 @@ package ru.javawebinar.topjava.util;
 import ru.javawebinar.topjava.model.AbstractBaseEntity;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
+import java.util.Objects;
+
 public class ValidationUtil {
+
+    public static <T> void checkNotNull(T object, Class<T> clazz) {
+        if (!Objects.nonNull(object)) {
+            throw new IllegalArgumentException("object " + clazz + " must not be null");
+        }
+    }
 
     public static <T> T checkNotFoundWithId(T object, int id) {
         checkNotFoundWithId(object != null, id);
