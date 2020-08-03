@@ -52,7 +52,8 @@ public class MealRestController {
 
     public List<MealTo> getAll() {
         log.info("getAll");
-        return getTos(service.getAll(authUserId()), DEFAULT_CALORIES_PER_DAY);
+        List<Meal> meals = service.getAll(authUserId());
+        return getTos(meals, meals, DEFAULT_CALORIES_PER_DAY);
     }
 
     public List<MealTo> getFiltered(String dateFromIncl, String dateToIncl,
@@ -75,10 +76,12 @@ public class MealRestController {
             return getAll();
         }
 
-        return getTos(service.getFiltered(
-                authUserId(),
-                localDateFromIncl, localDateToIncl,
-                localTimeFromIncl, localTimeToExcl),
+        return getTos(
+                service.getAll(authUserId()),
+                service.getFiltered(
+                        authUserId(),
+                        localDateFromIncl, localDateToIncl,
+                        localTimeFromIncl, localTimeToExcl),
                 DEFAULT_CALORIES_PER_DAY);
     }
 

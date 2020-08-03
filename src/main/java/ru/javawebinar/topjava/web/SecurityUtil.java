@@ -9,12 +9,9 @@ public class SecurityUtil {
 
     private static final Logger log = getLogger(SecurityUtil.class);
 
-    // может использоваться только на слое web !!
-
     private static int userId = 0;
 
     public static int authUserId() {
-//        return 1;
         return userId;
     }
 

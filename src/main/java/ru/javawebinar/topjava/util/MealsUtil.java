@@ -17,8 +17,6 @@ import java.util.stream.Collectors;
 public class MealsUtil {
     public static final int DEFAULT_CALORIES_PER_DAY = 2000;
 
-    public static Map<LocalDate, Integer> caloriesSumByDate;
-
     public static final List<Meal> MEALS = Arrays.asList(
             new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак", 500),
             new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 13, 0), "Обед", 1000),
@@ -29,28 +27,22 @@ public class MealsUtil {
             new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 20, 0), "Ужин", 410)
     );
 
-    public static List<MealTo> getTos(Collection<Meal> meals, int caloriesPerDay) {
-        return filterByPredicate(meals, caloriesPerDay, meal -> true);
+    public static List<MealTo> getTos(Collection<Meal> allMeals, Collection<Meal> filteredMeals, int caloriesPerDay) {
+        return filterByPredicate(allMeals, filteredMeals, caloriesPerDay, meal -> true);
     }
 
-    public static List<MealTo> getFilteredTos(Collection<Meal> meals, int caloriesPerDay, LocalTime startTime, LocalTime endTime) {
-//        return filterByPredicate(meals, caloriesPerDay, meal -> DateTimeUtil.isBetweenTimesHalfOpen(meal.getTime(), startTime, endTime));
-        return filterByPredicate(meals, caloriesPerDay, meal -> DateTimeUtil.isBetweenInclude(meal.getTime(), startTime, endTime));
+    public static List<MealTo> getFilteredTos(Collection<Meal> allMeals, Collection<Meal> filteredMeals, int caloriesPerDay, LocalTime startTime, LocalTime endTime) {
+        return filterByPredicate(allMeals, filteredMeals, caloriesPerDay, meal -> DateTimeUtil.isBetweenInclude(meal.getTime(), startTime, endTime));
     }
 
-    // выполняем после каждого изменения хранимых meal
-    public static void refreshCaloriesSumByDate(Collection<Meal> meals) {
-        caloriesSumByDate = meals.stream()
-                .collect(
-                        Collectors.groupingBy(Meal::getDate, Collectors.summingInt(Meal::getCalories))
-//                      Collectors.toMap(Meal::getDate, Meal::getCalories, Integer::sum)
-                );
-    }
-
-    public static List<MealTo> filterByPredicate(Collection<Meal> meals,
+    public static List<MealTo> filterByPredicate(Collection<Meal> allMeals,
+                                                 Collection<Meal> filteredMeals,
                                                  int caloriesPerDay,
                                                  Predicate<Meal> filter) {
-        return meals.stream()
+        Map<LocalDate, Integer> caloriesSumByDate = allMeals.stream()
+                .collect(Collectors.groupingBy(Meal::getDate, Collectors.summingInt(Meal::getCalories)));
+
+        return filteredMeals.stream()
                 .filter(filter)
                 .map(meal -> createTo(meal, caloriesSumByDate.get(meal.getDate()) > caloriesPerDay))
                 .collect(Collectors.toList());

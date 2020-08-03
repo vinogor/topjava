@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static ru.javawebinar.topjava.util.DateTimeUtil.isBetweenInclude;
-import static ru.javawebinar.topjava.util.MealsUtil.refreshCaloriesSumByDate;
 
 @Repository
 public class InMemoryMealRepository implements MealRepository {
@@ -38,7 +37,7 @@ public class InMemoryMealRepository implements MealRepository {
         log.info("cleanAll");
         storage = new ConcurrentHashMap<>();
         counter = new AtomicInteger(0);
-        refreshCaloriesSumByDate(Collections.emptyList());
+//        refreshCaloriesSumByDate(Collections.emptyList());
     }
 
     @Override
@@ -53,7 +52,7 @@ public class InMemoryMealRepository implements MealRepository {
             }
             Map<Integer, Meal> mealMap = storage.get(authUserId);
             mealMap.put(meal.getId(), meal);
-            refreshCaloriesSumByDate(mealMap.values());
+//            refreshCaloriesSumByDate(mealMap.values());
             return meal;
         }
 
@@ -64,7 +63,7 @@ public class InMemoryMealRepository implements MealRepository {
         }
         Map<Integer, Meal> mealMap = storage.get(authUserId);
         Meal result = mealMap.computeIfPresent(meal.getId(), (id, oldMeal) -> meal);
-        refreshCaloriesSumByDate(mealMap.values());
+//        refreshCaloriesSumByDate(mealMap.values());
         return result;
     }
 
@@ -90,7 +89,7 @@ public class InMemoryMealRepository implements MealRepository {
 
         boolean result = mealMap.remove(id) != null;
         if (result) {
-            refreshCaloriesSumByDate(mealMap.values());
+//            refreshCaloriesSumByDate(mealMap.values());
         }
         return result;
     }
@@ -115,8 +114,6 @@ public class InMemoryMealRepository implements MealRepository {
         }
 
         return toSortedReverseByDateTimeList(storage.get(authUserId).values().stream()
-//                .filter(m -> isBetweenTimesAndDatesHalfOpen(m.getDateTime(), from, to))
-
                         // "Фильтрацию по датам сделать в репозитории"
                         .filter(m -> isBetweenInclude(m.getDate(), localDateFromIncl, localDateToIncl))
                         .filter(m -> isBetweenInclude(m.getTime(), localTimeFromIncl, localTimeToExcl.minusNanos(1L)))

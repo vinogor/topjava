@@ -19,6 +19,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static ru.javawebinar.topjava.util.MealsUtil.MEALS;
+import static ru.javawebinar.topjava.web.SecurityUtil.setUserId;
 
 class MealRestControllerTest {
 
@@ -31,6 +32,7 @@ class MealRestControllerTest {
         appCtx = new ClassPathXmlApplicationContext("spring/spring-app.xml");
         controller = appCtx.getBean(MealRestController.class);
         repository = appCtx.getBean(InMemoryMealRepository.class);
+        setUserId(1);
     }
 
     @AfterAll
