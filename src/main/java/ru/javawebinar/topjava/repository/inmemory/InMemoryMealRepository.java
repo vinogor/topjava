@@ -8,7 +8,6 @@ import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.MealsUtil;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +36,6 @@ public class InMemoryMealRepository implements MealRepository {
         log.info("cleanAll");
         storage = new ConcurrentHashMap<>();
         counter = new AtomicInteger(0);
-//        refreshCaloriesSumByDate(Collections.emptyList());
     }
 
     @Override
@@ -47,13 +45,8 @@ public class InMemoryMealRepository implements MealRepository {
         if (meal.isNew()) {
             meal.setId(counter.incrementAndGet());
             log.info("save {}", meal);
-            if (!isKeyContains(authUserId)) {
-                storage.put(authUserId, new ConcurrentHashMap<>());
-            }
-            Map<Integer, Meal> mealMap = storage.get(authUserId);
-            mealMap.put(meal.getId(), meal);
-//            refreshCaloriesSumByDate(mealMap.values());
-            return meal;
+            storage.computeIfAbsent(authUserId, k -> new ConcurrentHashMap<>()).put(meal.getId(), meal);
+            return new Meal(meal);
         }
 
         // handle case: update, but not present in storage
@@ -61,10 +54,8 @@ public class InMemoryMealRepository implements MealRepository {
         if (!isKeyContains(authUserId)) {
             return null;
         }
-        Map<Integer, Meal> mealMap = storage.get(authUserId);
-        Meal result = mealMap.computeIfPresent(meal.getId(), (id, oldMeal) -> meal);
-//        refreshCaloriesSumByDate(mealMap.values());
-        return result;
+        Meal result = storage.get(authUserId).computeIfPresent(meal.getId(), (id, oldMeal) -> meal);
+        return result == null ? null : new Meal(result);
     }
 
     @Override
@@ -74,8 +65,8 @@ public class InMemoryMealRepository implements MealRepository {
         if (!isKeyContains(authUserId)) {
             return null;
         }
-
-        return storage.get(authUserId).get(id);
+        Meal result = storage.get(authUserId).get(id);
+        return result == null ? null : new Meal(result);
     }
 
     @Override
@@ -85,13 +76,7 @@ public class InMemoryMealRepository implements MealRepository {
         if (!isKeyContains(authUserId)) {
             return false;
         }
-        Map<Integer, Meal> mealMap = storage.get(authUserId);
-
-        boolean result = mealMap.remove(id) != null;
-        if (result) {
-//            refreshCaloriesSumByDate(mealMap.values());
-        }
-        return result;
+        return storage.get(authUserId).remove(id) != null;
     }
 
     @Override
@@ -101,22 +86,19 @@ public class InMemoryMealRepository implements MealRepository {
         if (!isKeyContains(authUserId)) {
             return Collections.emptyList();
         }
-        return toSortedReverseByDateTimeList(storage.get(authUserId).values().stream());
+        return toSortedReverseByDateTimeList(storage.get(authUserId).values().stream().map(Meal::new));
     }
 
     @Override
-    public List<Meal> getFiltered(int authUserId,
-                                  LocalDate localDateFromIncl, LocalDate localDateToIncl,
-                                  LocalTime localTimeFromIncl, LocalTime localTimeToExcl) {
+    public List<Meal> getFilteredByDate(int authUserId, LocalDate localDateFromIncl, LocalDate localDateToIncl) {
         log.info("getFiltered");
         if (!isKeyContains(authUserId)) {
             return Collections.emptyList();
         }
-
         return toSortedReverseByDateTimeList(storage.get(authUserId).values().stream()
-                        // "Фильтрацию по датам сделать в репозитории"
-                        .filter(m -> isBetweenInclude(m.getDate(), localDateFromIncl, localDateToIncl))
-                        .filter(m -> isBetweenInclude(m.getTime(), localTimeFromIncl, localTimeToExcl.minusNanos(1L)))
+                // "Фильтрацию по ДАТАМ (без учёта времени) сделать в репозитории"
+                .filter(m -> isBetweenInclude(m.getDate(), localDateFromIncl, localDateToIncl))
+                .map(Meal::new)
         );
     }
 

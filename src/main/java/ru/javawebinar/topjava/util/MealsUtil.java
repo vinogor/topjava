@@ -27,22 +27,19 @@ public class MealsUtil {
             new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 20, 0), "Ужин", 410)
     );
 
-    public static List<MealTo> getTos(Collection<Meal> allMeals, Collection<Meal> filteredMeals, int caloriesPerDay) {
-        return filterByPredicate(allMeals, filteredMeals, caloriesPerDay, meal -> true);
+    public static List<MealTo> getTos(Collection<Meal> filteredMeals, int caloriesPerDay) {
+        return filterByPredicate(filteredMeals, caloriesPerDay, meal -> true);
     }
 
-    public static List<MealTo> getFilteredTos(Collection<Meal> allMeals, Collection<Meal> filteredMeals, int caloriesPerDay, LocalTime startTime, LocalTime endTime) {
-        return filterByPredicate(allMeals, filteredMeals, caloriesPerDay, meal -> DateTimeUtil.isBetweenInclude(meal.getTime(), startTime, endTime));
+    public static List<MealTo> getFilteredByTimeTos(Collection<Meal> filteredByDateMeals, int caloriesPerDay, LocalTime startTime, LocalTime endTime) {
+        return filterByPredicate(filteredByDateMeals, caloriesPerDay, meal -> DateTimeUtil.isBetweenInclude(meal.getTime(), startTime, endTime));
     }
 
-    public static List<MealTo> filterByPredicate(Collection<Meal> allMeals,
-                                                 Collection<Meal> filteredMeals,
-                                                 int caloriesPerDay,
-                                                 Predicate<Meal> filter) {
-        Map<LocalDate, Integer> caloriesSumByDate = allMeals.stream()
+    public static List<MealTo> filterByPredicate(Collection<Meal> filteredByDateMeals, int caloriesPerDay, Predicate<Meal> filter) {
+        Map<LocalDate, Integer> caloriesSumByDate = filteredByDateMeals.stream()
                 .collect(Collectors.groupingBy(Meal::getDate, Collectors.summingInt(Meal::getCalories)));
 
-        return filteredMeals.stream()
+        return filteredByDateMeals.stream()
                 .filter(filter)
                 .map(meal -> createTo(meal, caloriesSumByDate.get(meal.getDate()) > caloriesPerDay))
                 .collect(Collectors.toList());

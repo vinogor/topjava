@@ -73,7 +73,7 @@ class MealRestControllerTest {
 
     @Test
     void createNull() {
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(NullPointerException.class, () -> {
             controller.create(null);
         });
     }
@@ -98,6 +98,14 @@ class MealRestControllerTest {
 
         assertThrows(IllegalArgumentException.class, () -> {
             controller.update(meal, 2);
+        });
+    }
+
+    @Test
+    void updateNotExist() {
+        Meal meal = new Meal(666, LocalDateTime.of(2222, Month.JANUARY, 30, 10, 0), "qqqqqqq", 500);
+        assertThrows(NotFoundException.class, () -> {
+            controller.update(meal, 666);
         });
     }
 
@@ -132,7 +140,7 @@ class MealRestControllerTest {
 
     @Test
     void updateNull() {
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(NullPointerException.class, () -> {
             controller.update(null, 1);
         });
     }

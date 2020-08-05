@@ -11,9 +11,9 @@ import ru.javawebinar.topjava.to.MealTo;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Objects;
 
-import static ru.javawebinar.topjava.util.MealsUtil.DEFAULT_CALORIES_PER_DAY;
-import static ru.javawebinar.topjava.util.MealsUtil.getTos;
+import static ru.javawebinar.topjava.util.MealsUtil.*;
 import static ru.javawebinar.topjava.util.ValidationUtil.*;
 import static ru.javawebinar.topjava.web.SecurityUtil.authUserId;
 
@@ -22,12 +22,12 @@ public class MealRestController {
 
     private static final Logger log = LoggerFactory.getLogger(MealRestController.class);
 
-    @Autowired // почему тут IDEA ворчит на field injection а в AbstractUserController нет ??
+    @Autowired
     private MealService service;
 
     public Meal create(Meal meal) {
         log.info("create {}", meal);
-        checkNotNull(meal, Meal.class);
+        Objects.requireNonNull(meal, "meal must not be null");
         checkNew(meal);
         return service.create(authUserId(), new Meal(meal));
     }
@@ -39,7 +39,7 @@ public class MealRestController {
 
     public void update(Meal meal, int id) {
         log.info("update {} with id={}", meal, id);
-        checkNotNull(meal, Meal.class);
+        Objects.requireNonNull(meal, "meal must not be null");
         Meal cloneMeal = new Meal(meal);
         assureIdConsistent(cloneMeal, id);
         service.update(authUserId(), cloneMeal);
@@ -53,7 +53,7 @@ public class MealRestController {
     public List<MealTo> getAll() {
         log.info("getAll");
         List<Meal> meals = service.getAll(authUserId());
-        return getTos(meals, meals, DEFAULT_CALORIES_PER_DAY);
+        return getTos(meals, DEFAULT_CALORIES_PER_DAY);
     }
 
     public List<MealTo> getFiltered(String dateFromIncl, String dateToIncl,
@@ -76,13 +76,10 @@ public class MealRestController {
             return getAll();
         }
 
-        return getTos(
-                service.getAll(authUserId()),
-                service.getFiltered(
-                        authUserId(),
-                        localDateFromIncl, localDateToIncl,
-                        localTimeFromIncl, localTimeToExcl),
-                DEFAULT_CALORIES_PER_DAY);
+        return getFilteredByTimeTos(
+                service.getFiltered(authUserId(), localDateFromIncl, localDateToIncl),
+                DEFAULT_CALORIES_PER_DAY,
+                localTimeFromIncl, localTimeToExcl.minusNanos(1L));
     }
 
     private boolean isExist(String str) {

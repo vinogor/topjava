@@ -91,11 +91,9 @@ public class MealServlet extends HttpServlet {
                 request.setAttribute("meal", meal);
                 request.getRequestDispatcher("/mealForm.jsp").forward(request, response);
                 break;
+
             case "all":
             default:
-                // TODO: почему 2 раза проходит по цепочке???
-                //  особенно после doPost - filter - срабатывает тут,
-                //  при этом в браузере корректно выводит отфильтрованные знания
                 log.info("getAll");
                 request.setAttribute("meals", controller.getAll());
                 request.getRequestDispatcher("/meals.jsp").forward(request, response);
