@@ -26,7 +26,10 @@ import static ru.javawebinar.topjava.UserTestData.*;
 })
 @RunWith(SpringRunner.class)
 // для восстановления БД перед КАЖДЫМ тестом
-@Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
+@Sql(
+        scripts = {"classpath:db/initDB.sql", "classpath:db/populateDB.sql"},
+        config = @SqlConfig(encoding = "UTF-8")
+)
 public class UserServiceTest {
 
     static {

@@ -16,6 +16,10 @@ import java.util.List;
 @Repository
 public class JdbcUserRepository implements UserRepository {
 
+    // - понимает что "вот_такое == вотТакое"
+    // - если в бине примитивное поле = null, то в базу запишется дефолтное значение (не null)
+    // - если в базе поле = null, то при маппинге будет эксепшон, лечится:
+    // This class can be configured (using the primitivesDefaultedForNullValue property) to trap this exception
     private static final BeanPropertyRowMapper<User> ROW_MAPPER = BeanPropertyRowMapper.newInstance(User.class);
 
     private final JdbcTemplate jdbcTemplate;
@@ -25,7 +29,10 @@ public class JdbcUserRepository implements UserRepository {
     private final SimpleJdbcInsert insertUser;
 
     @Autowired
-    public JdbcUserRepository(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+    public JdbcUserRepository(
+            JdbcTemplate jdbcTemplate,
+            NamedParameterJdbcTemplate namedParameterJdbcTemplate
+    ) {
         this.insertUser = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("users")
                 .usingGeneratedKeyColumns("id"); // автогенерация id при вставке
@@ -48,10 +55,11 @@ public class JdbcUserRepository implements UserRepository {
         if (user.isNew()) {
             Number newKey = insertUser.executeAndReturnKey(map);
             user.setId(newKey.intValue());
+            // возвращает код-во изменённых строк
         } else if (namedParameterJdbcTemplate.update(
                 "UPDATE users SET name=:name, email=:email, password=:password, " +
                         "registered=:registered, enabled=:enabled, calories_per_day=:caloriesPerDay WHERE id=:id", map) == 0) {
-            return null;
+            return null; // если ничего не изменилось
         }
         return user;
     }

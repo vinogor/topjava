@@ -19,10 +19,12 @@ import static ru.javawebinar.topjava.util.ValidationUtil.checkNew;
 
 @Controller
 public class MealRestController {
+
     private static final Logger log = LoggerFactory.getLogger(MealRestController.class);
 
     private final MealService service;
 
+    //  @Autowired   // - не обязательно
     public MealRestController(MealService service) {
         this.service = service;
     }
@@ -70,7 +72,9 @@ public class MealRestController {
         int userId = SecurityUtil.authUserId();
         log.info("getBetween dates({} - {}) time({} - {}) for user {}", startDate, endDate, startTime, endTime, userId);
 
+        // в БД фильтруем только по датам
         List<Meal> mealsDateFiltered = service.getBetweenInclusive(startDate, endDate, userId);
-        return MealsUtil.getFilteredTos(mealsDateFiltered, SecurityUtil.authUserCaloriesPerDay(), startTime, endTime);
+        // и при отдаче уже фильтруем по времени для каждой даты
+        return MealsUtil.getFilteredByTimeTos(mealsDateFiltered, SecurityUtil.authUserCaloriesPerDay(), startTime, endTime);
     }
 }
