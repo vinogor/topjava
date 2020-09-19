@@ -22,8 +22,8 @@ public class MealTestData {
     public static final Meal MEAL_2 = new Meal(100003, LocalDateTime.of(2020, Month.JANUARY, 30, 13, 0), "Обед", 1000);
     public static final Meal MEAL_3 = new Meal(100002, LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак", 500);
 
-    public static final Meal MEAL_ADMIN_1 = new Meal(100010, LocalDateTime.of(2020, Month.JANUARY, 31, 21, 0), "Админ ужин", 1500);
-    public static final Meal MEAL_ADMIN_2 = new Meal(100009, LocalDateTime.of(2020, Month.JANUARY, 31, 14, 0), "Админ ланч", 500);
+    public static final Meal MEAL_ADMIN_1 = new Meal(100010, LocalDateTime.of(2020, Month.JANUARY, 30, 21, 0), "Админ ужин", 1500);
+    public static final Meal MEAL_ADMIN_2 = new Meal(100009, LocalDateTime.of(2020, Month.JANUARY, 30, 14, 0), "Админ ланч", 500);
 
     public static Meal getNew() {
         return new Meal(MEAL_NEW);

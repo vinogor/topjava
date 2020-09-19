@@ -55,13 +55,8 @@ public class MealServiceTest {
 
     @Test
     public void duplicateMealCreate() {
-        assertThrows(DataAccessException.class, () ->
-                {
-                    service.create(getNew(), USER_ID);
-                    getNew();
-                    service.create(getNew(), USER_ID);
-                }
-        );
+        service.create(getNew(), USER_ID);
+        assertThrows(DataAccessException.class, () -> service.create(getNew(), USER_ID));
     }
 
     @Test
@@ -116,9 +111,7 @@ public class MealServiceTest {
         Meal updated = getUpdated();
         updated.setId(id);
 
-        service.update(updated, ADMIN_ID);
-
-        assertThrows(NotFoundException.class, () -> assertEquals(service.get(id, USER_ID), updated));
+        assertThrows(NotFoundException.class, () -> service.update(updated, ADMIN_ID));
     }
 
     @Test

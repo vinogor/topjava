@@ -61,8 +61,8 @@ public class JdbcMealRepository implements MealRepository {
         } else if (
             // возвращает кол-во изменённых строк
                 namedParameterJdbcTemplate.update(
-                        "UPDATE meals SET user_id=:userId, date_time=:dateTime, description=:description, " +
-                                "calories=:calories WHERE id=:id", map) == 0) {
+                        "UPDATE meals SET date_time=:dateTime, description=:description, " +
+                                "calories=:calories WHERE user_id=:userId AND id=:id", map) == 0) {
             return null; // если ничего не обновилось
         }
         return meal;
@@ -91,7 +91,7 @@ public class JdbcMealRepository implements MealRepository {
     public List<Meal> getBetweenHalfOpen(LocalDateTime startDate, LocalDateTime endDate, int userId) {
         log.info("get filtered by startDate={} endDate={} for user {}", userId, startDate, endDate);
         return jdbcTemplate.query(
-                "SELECT * FROM meals WHERE date_time >= ? AND date_time < ? ORDER BY date_time DESC",
-                ROW_MAPPER, startDate, endDate);
+                "SELECT * FROM meals WHERE user_id = ? AND date_time >= ? AND date_time < ? ORDER BY date_time DESC",
+                ROW_MAPPER, userId, startDate, endDate);
     }
 }
