@@ -56,6 +56,9 @@ public class UserServiceTest {
         assertThrows(NotFoundException.class, () -> service.delete(NOT_FOUND));
     }
 
+    // если в User поле roles LAZY то так не подтянет его
+    // но даже если LAZY можно сделать чтобы подтягивал через createNamedQuery, где явно прописан join
+    // см 3й способ в JpaUserRepository#delete()
     @Test
     public void get() throws Exception {
         User user = service.get(USER_ID);

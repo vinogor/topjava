@@ -17,7 +17,17 @@ import static ru.javawebinar.topjava.util.MealsUtil.DEFAULT_CALORIES_PER_DAY;
 
 @Entity //                                 не обязательно, если БД создаём отдельно сами
 @Table(name = "users", uniqueConstraints = {@UniqueConstraint(columnNames = "email", name = "users_unique_email_idx")})
+@NamedQueries({
+        // для 3го способа в JpaUserRepository
+        @NamedQuery(name = User.DELETE, query = "DELETE FROM User u WHERE u.id=:id"),
+        @NamedQuery(name = User.BY_EMAIL, query = "SELECT u FROM User u LEFT JOIN FETCH u.roles WHERE u.email=?1"),
+        @NamedQuery(name = User.ALL_SORTED, query = "SELECT u FROM User u LEFT JOIN FETCH u.roles ORDER BY u.name, u.email"),
+})
 public class User extends AbstractNamedEntity {
+
+    public static final String DELETE = "User.delete";
+    public static final String BY_EMAIL = "User.getByEmail";
+    public static final String ALL_SORTED = "User.getAllSorted";
 
     @Column(name = "email", nullable = false, unique = true)
     @Email
@@ -44,7 +54,8 @@ public class User extends AbstractNamedEntity {
                     columnNames = {"user_id", "role"},
                     name = "user_roles_unique_idx")})
     @Column(name = "role")
-    @ElementCollection(fetch = FetchType.EAGER) // не ленивая, "нетерпеливая"
+    @ElementCollection(fetch = FetchType.EAGER) // не ленивая загрузка объекта, дословно "нетерпеливая"
+//    @ElementCollection(fetch = FetchType.LAZY) // а так не подтянет через left outer join
     private Set<Role> roles;
 
     @Column(name = "calories_per_day", nullable = false, columnDefinition = "int default 2000")
