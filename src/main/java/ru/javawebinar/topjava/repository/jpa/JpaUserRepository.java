@@ -30,12 +30,14 @@ public class JpaUserRepository implements UserRepository {
     private EntityManager em;
 
     @Override
-    @Transactional // нужна там где что-то меняется, аннотация JPA
+    @Transactional // нужна там, где что-то меняется, аннотация JPA
     public User save(User user) {
         if (user.isNew()) {
             em.persist(user);
             return user;
         } else {
+            // em.merge - при отсутствии старой записи (несуществующий id) создает новую.
+            // Т. е. в JpaUserRepository нарушается логика
             return em.merge(user);
         }
     }
