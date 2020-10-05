@@ -1,7 +1,15 @@
 package ru.javawebinar.topjava.service;
 
+import org.junit.Assert;
+import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
+import org.junit.rules.TestWatcher;
+import org.junit.runner.Description;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
@@ -9,6 +17,7 @@ import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
+import ru.javawebinar.topjava.web.meal.MealRestController;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -25,6 +34,42 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 @RunWith(SpringRunner.class)
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 public class MealServiceTest {
+
+    private static final Logger log = LoggerFactory.getLogger(MealRestController.class);
+    private static final StringBuilder sb = new StringBuilder();
+
+    private static long startTime;
+
+    @Rule
+    public final TestRule watchmanMethod = new TestWatcher() {
+
+        @Override
+        protected void starting(Description description) {
+            startTime = System.currentTimeMillis();
+            super.starting(description);
+        }
+
+        @Override
+        protected void finished(Description description) {
+            long timeSpent = System.currentTimeMillis() - startTime;
+            log.info("test {}() was completed in {} millis", description.getMethodName(), timeSpent);
+            sb
+                    .append("    test ").append(description.getMethodName()).append("() was completed in ")
+                    .append(timeSpent).append(" millis").append("\n");
+            super.finished(description);
+        }
+    };
+
+    @ClassRule
+    public static final TestRule watchmanClass = new TestWatcher() {
+
+        @Override
+        protected void finished(Description description) {
+            log.info(sb.toString());
+            super.finished(description);
+        }
+    };
+
 
     @Autowired
     private MealService service;
@@ -52,6 +97,7 @@ public class MealServiceTest {
         Meal newMeal = getNew();
         newMeal.setId(newId);
         MEAL_MATCHER.assertMatch(created, newMeal);
+        Assert.assertEquals(USER_ID, created.getUser().getId().intValue());
         MEAL_MATCHER.assertMatch(service.get(newId, USER_ID), newMeal);
     }
 

@@ -19,4 +19,7 @@
         <appender-ref ref="console"/>
     </root>
 
+    <!-- Чтобы посмотреть информацию о транзакциях (открытие/закрытие и пр.) -->
+    <!--    <logger name="org.springframework.orm.jpa.JpaTransactionManager" level="debug"/>-->
+
 </configuration>
