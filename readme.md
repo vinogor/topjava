@@ -7,3 +7,6 @@ Codacy Badge (app.codacy.com) -
 
 Build Status (travis-ci.org) -
 [![Build Status](https://travis-ci.org/vinogor/topjava.svg?branch=master)](https://travis-ci.org/vinogor/topjava)
+
+Для корректного логирования при запуске TomCat - укажите каталог для создания логов через установку переменной окружения TOPJAVA_ROOT, например, на корень проекта
+( добавить и в run и debug: TOPJAVA_ROOT=c:\IdeaProjects\topjava\ )
