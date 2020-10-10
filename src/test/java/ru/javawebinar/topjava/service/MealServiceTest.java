@@ -1,9 +1,7 @@
 package ru.javawebinar.topjava.service;
 
-import org.junit.Assert;
-import org.junit.ClassRule;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
+import org.junit.rules.Stopwatch;
 import org.junit.rules.TestRule;
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
@@ -21,7 +19,11 @@ import ru.javawebinar.topjava.web.meal.MealRestController;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 import static ru.javawebinar.topjava.MealTestData.*;
 import static ru.javawebinar.topjava.UserTestData.ADMIN_ID;
@@ -70,6 +72,34 @@ public class MealServiceTest {
         }
     };
 
+    private static void logInfo(Description description, String status, long nanos) {
+        String testName = description.getMethodName();
+        log.info(String.format("Test %s %s, spent %d millis",
+                testName, status, TimeUnit.NANOSECONDS.toMillis(nanos)));
+    }
+
+    @Rule // способ замера времени исполнения участка кода
+    public Stopwatch stopwatch = new Stopwatch() {
+        @Override
+        protected void succeeded(long nanos, Description description) {
+            logInfo(description, "succeeded", nanos);
+        }
+
+        @Override
+        protected void failed(long nanos, Throwable e, Description description) {
+            logInfo(description, "failed", nanos);
+        }
+
+        @Override
+        protected void skipped(long nanos, AssumptionViolatedException e, Description description) {
+            logInfo(description, "skipped", nanos);
+        }
+
+        @Override
+        protected void finished(long nanos, Description description) {
+            logInfo(description, "finished", nanos);
+        }
+    };
 
     @Autowired
     private MealService service;
@@ -97,7 +127,6 @@ public class MealServiceTest {
         Meal newMeal = getNew();
         newMeal.setId(newId);
         MEAL_MATCHER.assertMatch(created, newMeal);
-        Assert.assertEquals(USER_ID, created.getUser().getId().intValue());
         MEAL_MATCHER.assertMatch(service.get(newId, USER_ID), newMeal);
     }
 
@@ -131,7 +160,14 @@ public class MealServiceTest {
 
     @Test
     public void getAll() throws Exception {
-        MEAL_MATCHER.assertMatch(service.getAll(USER_ID), MEALS);
+        long delta = 70; // максимально допустимый разброс
+        long actualStart = stopwatch.runtime(MILLISECONDS);
+        List<Meal> meals = service.getAll(USER_ID);
+        long actualStop = stopwatch.runtime(MILLISECONDS);
+        long actual = actualStop - actualStart;
+        assertEquals(70d, actual, delta);
+        log.info("service.getAll() was completed in {} millis", actual);
+        MEAL_MATCHER.assertMatch(meals, MEALS);
     }
 
     @Test

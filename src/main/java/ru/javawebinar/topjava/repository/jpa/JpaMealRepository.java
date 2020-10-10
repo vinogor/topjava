@@ -15,15 +15,12 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class JpaMealRepository implements MealRepository {
 
-    // да, можно было сделать через namedQuery, но, чтобы попробовать все способы, сделал и так
-    public static final String GET_MEAL_BY_ID_AND_USER_ID =
-            "SELECT m FROM Meal m LEFT JOIN FETCH m.user WHERE m.id = :id AND m.user.id = :userId";
-
     @PersistenceContext
     private EntityManager em;
 
     @Override
     @Transactional
+    // "При записи в базу через namedQuery валидация энтити не работает, только валидация в БД."
     public Meal save(Meal meal, int userId) {
 
         // User userRef = em.getReference(User.class, userId); // если не найдено то EntityNotFoundException -> не подходит, т.к. надо без try-catch
@@ -45,15 +42,11 @@ public class JpaMealRepository implements MealRepository {
 
         // "em.merge - при отсутствии старой записи (несуществующий id) создает новую (БАГА!), т. е. в Jpa[Entity]Repository нарушается логика"
         // вдруг у meal, который хотим сохранить, задан несуществующий id и/или не соответствующий userId
-        Meal mealFromDb = em.createQuery(GET_MEAL_BY_ID_AND_USER_ID, Meal.class)
-                .setParameter("id", meal.getId())
-                .setParameter("userId", userId)
-                .getResultStream()
-                .findFirst().orElse(null);
+        Meal mealFromDb = getMealFromDb(meal.getId(), userId);
         if (mealFromDb == null) {
             return null;
         }
-        meal.setUser(mealFromDb.getUser()); // если user всегда остаётся неизменным у meal
+        meal.setUser(em.getReference(User.class, userId)); // точно найдёт -> exception не кинет
 
         // "entity, переданный в merge, не меняется. Нужно использовать возвращаемый результат"
         // ???: то есть возвращается новая сущность такого же типа?
@@ -62,11 +55,7 @@ public class JpaMealRepository implements MealRepository {
 
     @Override
     public Meal get(int id, int userId) {
-        return em.createQuery(GET_MEAL_BY_ID_AND_USER_ID, Meal.class)
-                .setParameter("id", id)
-                .setParameter("userId", userId)
-                .getResultStream()
-                .findFirst().orElse(null);
+        return getMealFromDb(id, userId);
     }
 
     @Override
@@ -81,7 +70,6 @@ public class JpaMealRepository implements MealRepository {
 
     @Override
     public List<Meal> getAll(int userId) {
-        // "При записи в базу через namedQuery валидация энтити не работает, только валидация в БД."
         return em.createNamedQuery(Meal.ALL_SORTED, Meal.class)
                 .setParameter("userId", userId)
                 .getResultList();
@@ -94,5 +82,13 @@ public class JpaMealRepository implements MealRepository {
                 .setParameter("endDateTime", endDateTime)
                 .setParameter("userId", userId)
                 .getResultList();
+    }
+
+    private Meal getMealFromDb(int id, int userId) {
+        return em.createNamedQuery(Meal.GET_MEAL_BY_ID_AND_USER_ID, Meal.class)
+                .setParameter("id", id)
+                .setParameter("userId", userId)
+                .getResultStream()
+                .findFirst().orElse(null);
     }
 }
