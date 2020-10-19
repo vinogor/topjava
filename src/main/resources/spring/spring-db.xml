@@ -56,6 +56,10 @@
                 <entry key="#{T(org.hibernate.cfg.AvailableSettings).FORMAT_SQL}" value="${hibernate.format_sql}"/>
 <!--                чтобы при выводе SQL команд, выводились и SQL комментарии -->
                 <entry key="#{T(org.hibernate.cfg.AvailableSettings).USE_SQL_COMMENTS}" value="${hibernate.use_sql_comments}"/>
+<!--                 по умолчанию false, см AbstractBaseEntity                       -->
+<!--            С версии 5.2.13.Final загрузка прокси при обращении к id управляется -->
+<!--            флагом JPA_PROXY_COMPLIANCE (по умолчанию запрос не делается)        -->
+                <entry key="#{T(org.hibernate.cfg.AvailableSettings).JPA_PROXY_COMPLIANCE}" value="false"/>
 <!--                                                                     HBM2DDL_AUTO - по entity генерация базы           -->
                 <!--<entry key="#{T(org.hibernate.cfg.AvailableSettings).HBM2DDL_AUTO}" value="${hibernate.hbm2ddl.auto}"/>-->
             </map>
