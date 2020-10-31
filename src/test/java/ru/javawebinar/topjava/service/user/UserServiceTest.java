@@ -1,8 +1,13 @@
-package ru.javawebinar.topjava.service;
+package ru.javawebinar.topjava.service.user;
 
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.Stopwatch;
+import org.junit.runner.Description;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.dao.DataAccessException;
@@ -14,11 +19,14 @@ import org.springframework.test.context.junit4.SpringRunner;
 import ru.javawebinar.topjava.ActiveDbProfileResolver;
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
+import ru.javawebinar.topjava.service.UserService;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.*;
+import static org.slf4j.LoggerFactory.getLogger;
 import static ru.javawebinar.topjava.UserTestData.*;
 
 @ContextConfiguration({
@@ -29,13 +37,37 @@ import static ru.javawebinar.topjava.UserTestData.*;
 // для восстановления БД перед КАЖДЫМ тестом
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 @ActiveProfiles(resolver = ActiveDbProfileResolver.class)
-public class UserServiceTest {
+public abstract class UserServiceTest {
+
+    private static final Logger log = getLogger("result");
+
+    private static StringBuilder results = new StringBuilder();
+
+    @Rule
+    public final Stopwatch stopwatch = new Stopwatch() {
+        @Override
+        protected void finished(long nanos, Description description) {
+            String result = String.format("\n%-25s %7d", description.getMethodName(), TimeUnit.NANOSECONDS.toMillis(nanos));
+            results.append(result);
+//            log.info(result + " ms\n");
+        }
+    };
 
     @Autowired
-    private UserService service;
+    UserService service;
 
     @Autowired
     private CacheManager cacheManager;
+
+    @AfterClass
+    public static void printResult() {
+        log.info("\n---------------------------------" +
+                "\nTest                 Duration, ms" +
+                "\n---------------------------------" +
+                results +
+                "\n---------------------------------");
+        results = new StringBuilder();
+    }
 
     @Before // инвалидируем кэш
     public void setUp() throws Exception {
@@ -55,7 +87,7 @@ public class UserServiceTest {
     @Test
     public void duplicateMailCreate() throws Exception {
         assertThrows(DataAccessException.class, () ->
-                service.create(new User(null, "Duplicate", "user@yandex.ru", "newPass", Role.USER)));
+                service.create(new User(null, "Duplicate", "user@yandex.ru", "newPass", null, Role.USER)));
     }
 
     @Test
@@ -75,7 +107,7 @@ public class UserServiceTest {
     @Test
     public void get() throws Exception {
         User user = service.get(USER_ID);
-        USER_MATCHER.assertMatch(user, USER);
+        USER_MATCHER.assertMatch(user, USER_WITH_MEALS);
     }
 
     @Test
@@ -86,19 +118,20 @@ public class UserServiceTest {
     @Test
     public void getByEmail() throws Exception {
         User user = service.getByEmail("admin@gmail.com");
-        USER_MATCHER.assertMatch(user, ADMIN);
+        USER_MATCHER.assertMatch(user, ADMIN_WITHOUT_MEALS);
     }
 
     @Test
     public void update() throws Exception {
-        User updated = getUpdated();
+        User updated = getUpdatedWithEmptyMeals();
+
         service.update(updated);
-        USER_MATCHER.assertMatch(service.get(USER_ID), getUpdated());
+        USER_MATCHER.assertMatch(service.get(USER_ID), getUpdatedWithMeals());
     }
 
     @Test
     public void getAll() throws Exception {
         List<User> all = service.getAll();
-        USER_MATCHER.assertMatch(all, ADMIN, USER);
+        USER_MATCHER.assertMatch(all, ADMIN_WITHOUT_MEALS, USER_WITH_MEALS);
     }
 }

@@ -14,7 +14,7 @@ import java.util.List;
 @Repository
 @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
 // чтение есть смысл делать в транзакции - ибо оптимизации (см ссылку в уроке)
-// применяется ко всем методам, кто тех, где явно прописано иное. Аннотация Spring
+// применяется ко всем методам, кроме тех, где явно прописано иное. Аннотация Spring
 public class JpaUserRepository implements UserRepository {
 
 //    если бы работали с Hibernate без JPA, то надо было бы вот это:
@@ -27,7 +27,7 @@ public class JpaUserRepository implements UserRepository {
     }
 */
 
-    //  это замена вышеперечисленному
+    // это замена вышеперечисленному
     @PersistenceContext
     private EntityManager em;
 

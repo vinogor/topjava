@@ -6,6 +6,12 @@
 
     <display-name>Topjava</display-name>
 
+<!-- TODO: а так профиля не срабатывают. Почему? -->
+<!--    <context-param>-->
+<!--        <param-name>spring.profiles.active</param-name>-->
+<!--        <param-value>postgres,datajpa</param-value>-->
+<!--    </context-param>-->
+
     <servlet>
         <servlet-name>userServlet</servlet-name>
         <servlet-class>ru.javawebinar.topjava.web.UserServlet</servlet-class>

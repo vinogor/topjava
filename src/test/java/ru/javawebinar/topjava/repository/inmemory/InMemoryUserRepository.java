@@ -9,8 +9,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static ru.javawebinar.topjava.UserTestData.ADMIN;
-import static ru.javawebinar.topjava.UserTestData.USER;
+import static ru.javawebinar.topjava.UserTestData.ADMIN_WITHOUT_MEALS;
+import static ru.javawebinar.topjava.UserTestData.USER_WITH_MEALS;
 
 
 @Repository
@@ -18,8 +18,8 @@ public class InMemoryUserRepository extends InMemoryBaseRepository<User> impleme
 
     public void init() {
         map.clear();
-        map.put(UserTestData.USER_ID, USER);
-        map.put(UserTestData.ADMIN_ID, ADMIN);
+        map.put(UserTestData.USER_ID, USER_WITH_MEALS);
+        map.put(UserTestData.ADMIN_ID, ADMIN_WITHOUT_MEALS);
     }
 
     @Override

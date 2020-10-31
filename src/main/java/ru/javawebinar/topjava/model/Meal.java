@@ -39,6 +39,7 @@ public class Meal extends AbstractBaseEntity {
     private int calories;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    //                  user_id - имя колонки, соответствующей данному полю
     @JoinColumn(name = "user_id", nullable = false)
     @NotNull
     private User user;
