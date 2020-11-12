@@ -38,7 +38,8 @@ public class MealTestData {
     }};
 
     static {
-        ADMIN_WITH_MEALS = new User(ADMIN_ID, "Admin", "admin@gmail.com", "admin", MEALS_FOR_ADMIN, Role.ADMIN);
+        ADMIN_WITH_MEALS = new User(ADMIN_ID, "Admin", "admin@gmail.com", "admin", Role.ADMIN);
+        ADMIN_WITH_MEALS.setMeals(MEALS_FOR_ADMIN);
     }
 
     public static Meal getNew() {

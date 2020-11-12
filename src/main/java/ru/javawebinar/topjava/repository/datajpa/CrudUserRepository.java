@@ -17,7 +17,7 @@ import java.util.Optional;
 public interface CrudUserRepository extends JpaRepository<User, Integer> {
 
     @Transactional
-    @Modifying // указываем, если надо модифицировать запрос через @Query
+    @Modifying // указываем, если запрос через @Query вносит ИЗМЕНЕНИЯ в бд и должен быть по другому выполнен
     // @Query(name = User.DELETE) // можно и так
     @Query("DELETE FROM User u WHERE u.id=:id")
     // указать @Param("id") чтобы корректно подставилось по имени в запрос
@@ -31,5 +31,5 @@ public interface CrudUserRepository extends JpaRepository<User, Integer> {
 
     @EntityGraph(attributePaths = "meals") // чтобы подтягивалось LAZY поле, иначе LazyInitialization failed
     @Query("SELECT u FROM User u WHERE u.id=:id")
-    Optional<User> findById(@Param("id") int id);
+    Optional<User> findByIdWithMeals(@Param("id") int id);
 }

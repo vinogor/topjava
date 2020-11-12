@@ -1,20 +1,21 @@
-package ru.javawebinar.topjava.service.meal;
+package ru.javawebinar.topjava.service.datajpa;
 
 import org.junit.Test;
 import org.springframework.test.context.ActiveProfiles;
+import ru.javawebinar.topjava.Profiles;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.model.User;
+import ru.javawebinar.topjava.service.MealServiceTest;
 
 import static ru.javawebinar.topjava.MealTestData.*;
 import static ru.javawebinar.topjava.UserTestData.*;
 
-@ActiveProfiles(profiles = {"datajpa"})
+@ActiveProfiles(profiles = {Profiles.DATAJPA})
 public class DataJpaMealServiceTest extends MealServiceTest {
 
-    @Override
     @Test
-    public void get() throws Exception {
-        Meal meal = service.get(ADMIN_MEAL_ID, ADMIN_ID);
+    public void getWithUser() throws Exception {
+        Meal meal = service.getWithUser(ADMIN_MEAL_ID, ADMIN_ID);
         MEAL_MATCHER.assertMatch(meal, ADMIN_MEAL1);
 
         User user = meal.getUser();

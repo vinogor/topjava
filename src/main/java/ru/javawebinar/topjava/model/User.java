@@ -10,7 +10,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.*;
 
-import static java.util.Collections.emptyList;
 import static ru.javawebinar.topjava.util.MealsUtil.DEFAULT_CALORIES_PER_DAY;
 
 @Entity //                                 не обязательно, если БД создаём отдельно сами
@@ -63,7 +62,6 @@ public class User extends AbstractNamedEntity {
     // mappedBy = "user" => meals главное поле в отношениях, у подчинённого есть поле user, которое ссылается на главное
     // !!! а соответствующей колонки в таблице users не будет
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL)
-    @NotNull // ???
     @OrderBy("dateTime desc")
     private List<Meal> meals;
 
@@ -71,11 +69,11 @@ public class User extends AbstractNamedEntity {
     }
 
     public User(User u) {
-        this(u.getId(), u.getName(), u.getEmail(), u.getPassword(), u.getCaloriesPerDay(), u.isEnabled(), u.getRegistered(), u.getRoles(), u.getMeals());
+        this(u.getId(), u.getName(), u.getEmail(), u.getPassword(), u.getCaloriesPerDay(), u.isEnabled(), u.getRegistered(), u.getRoles());
     }
 
-    public User(Integer id, String name, String email, String password, List<Meal> meals, Role role, Role... roles) {
-        this(id, name, email, password, DEFAULT_CALORIES_PER_DAY, true, new Date(), EnumSet.of(role, roles), meals);
+    public User(Integer id, String name, String email, String password, Role role, Role... roles) {
+        this(id, name, email, password, DEFAULT_CALORIES_PER_DAY, true, new Date(), EnumSet.of(role, roles));
     }
 
     public User(Integer id,
@@ -85,8 +83,7 @@ public class User extends AbstractNamedEntity {
                 int caloriesPerDay,
                 boolean enabled,
                 Date registered,
-                Collection<Role> roles,
-                List<Meal> meals) {
+                Collection<Role> roles) {
         super(id, name);
         this.email = email;
         this.password = password;
@@ -94,7 +91,6 @@ public class User extends AbstractNamedEntity {
         this.enabled = enabled;
         this.registered = registered;
         setRoles(roles);
-        this.meals = meals == null ? emptyList() : meals;
     }
 
     public String getEmail() {

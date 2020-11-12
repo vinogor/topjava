@@ -1,4 +1,4 @@
-package ru.javawebinar.topjava.service.user;
+package ru.javawebinar.topjava.service;
 
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -54,6 +54,7 @@ public abstract class UserServiceTest {
     };
 
     @Autowired
+    protected
     UserService service;
 
     @Autowired
@@ -87,7 +88,7 @@ public abstract class UserServiceTest {
     @Test
     public void duplicateMailCreate() throws Exception {
         assertThrows(DataAccessException.class, () ->
-                service.create(new User(null, "Duplicate", "user@yandex.ru", "newPass", null, Role.USER)));
+                service.create(new User(null, "Duplicate", "user@yandex.ru", "newPass", Role.USER)));
     }
 
     @Test

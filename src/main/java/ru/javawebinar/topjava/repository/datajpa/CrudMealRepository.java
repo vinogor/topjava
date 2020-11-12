@@ -25,15 +25,17 @@ public interface CrudMealRepository extends JpaRepository<Meal, Integer> {
             @Param("userId") int userId
     );
 
-    List<Meal> getAllByUser(User user, Sort sort);
+    List<Meal> getAllByUserId(int userId, Sort sort);
 
-    List<Meal> findByUserAndDateTimeGreaterThanEqualAndDateTimeLessThan(
-            User user, LocalDateTime startDateTime, LocalDateTime endDateTime, Sort sort);
+    List<Meal> findByUserIdAndDateTimeGreaterThanEqualAndDateTimeLessThan(
+            int userId, LocalDateTime startDateTime, LocalDateTime endDateTime, Sort sort);
+
+    Optional<Meal> findByUserIdAndId(int userId, int mealId);
 
     @EntityGraph(attributePaths = "user")
     @Query("SELECT m FROM Meal m WHERE m.id=:mealId AND m.user.id=:userId")
-    Optional<Meal> findByUserAndId(
-            @Param("mealId") int mealId,
-            @Param("userId") int userId
+    Optional<Meal> findByUserIdAndIdWithUser(
+            @Param("userId") int userId,
+            @Param("mealId") int mealId
     );
 }

@@ -33,7 +33,8 @@ public class UserTestData {
     }};
 
     static {
-        USER_WITH_MEALS = new User(USER_ID, "User", "user@yandex.ru", "password", MEALS_FOR_USER, Role.USER);
+        USER_WITH_MEALS = new User(USER_ID, "User", "user@yandex.ru", "password", Role.USER);
+        USER_WITH_MEALS.setMeals(MEALS_FOR_USER);
         MEAL1.setUser(USER_WITH_MEALS);
         MEAL2.setUser(USER_WITH_MEALS);
         MEAL3.setUser(USER_WITH_MEALS);
@@ -43,8 +44,8 @@ public class UserTestData {
         MEAL7.setUser(USER_WITH_MEALS);
     }
 
-    public static final User USER_WITHOUT_MEALS = new User(USER_ID, "User", "user@yandex.ru", "password", null, Role.USER);
-    public static final User ADMIN_WITHOUT_MEALS = new User(ADMIN_ID, "Admin", "admin@gmail.com", "admin", null, Role.ADMIN);
+    public static final User USER_WITHOUT_MEALS = new User(USER_ID, "User", "user@yandex.ru", "password", Role.USER);
+    public static final User ADMIN_WITHOUT_MEALS = new User(ADMIN_ID, "Admin", "admin@gmail.com", "admin", Role.ADMIN);
 
     public static User getNew() {
         return new User(
@@ -55,8 +56,7 @@ public class UserTestData {
                 1555,
                 false,
                 new Date(),
-                Collections.singleton(Role.USER),
-                null);
+                Collections.singleton(Role.USER));
     }
 
     public static User getUpdatedWithMeals() {
