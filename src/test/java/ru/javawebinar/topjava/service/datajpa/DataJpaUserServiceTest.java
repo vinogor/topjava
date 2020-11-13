@@ -19,11 +19,7 @@ public class DataJpaUserServiceTest extends UserServiceTest {
     public void getWithMeals() {
         User user = service.getWithMeals(USER_ID);
         USER_MATCHER.assertMatch(user, USER_WITH_MEALS);
-
         List<Meal> meals = user.getMeals();
-
-        for (int i = 0; i < meals.size(); i++) {
-            MEAL_MATCHER.assertMatch(meals.get(i), MEALS_FOR_USER.get(i));
-        }
+        MEAL_MATCHER.assertMatch(meals, MEALS_FOR_USER);
     }
 }
