@@ -1,6 +1,8 @@
 package ru.javawebinar.topjava.model;
 
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.validator.constraints.Range;
 import org.springframework.util.CollectionUtils;
 
@@ -15,6 +17,7 @@ import static ru.javawebinar.topjava.util.MealsUtil.DEFAULT_CALORIES_PER_DAY;
 
 @Entity //                                 не обязательно, если БД создаём отдельно сами
 @Table(name = "users", uniqueConstraints = {@UniqueConstraint(columnNames = "email", name = "users_unique_email_idx")})
+@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE) // кеширование users
 @NamedQueries({
         // для 3го способа в JpaUserRepository
         @NamedQuery(name = User.DELETE, query = "DELETE FROM User u WHERE u.id=:id"),
@@ -45,6 +48,7 @@ public class User extends AbstractNamedEntity {
     @NotNull
     private Date registered = new Date();
 
+    @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE) // кеширование roles
     @Enumerated(EnumType.STRING)
     @CollectionTable(name = "user_roles", // имя таблицы для связи users и roles
             joinColumns = @JoinColumn(name = "user_id"), // связываем по полю user_id
@@ -53,7 +57,7 @@ public class User extends AbstractNamedEntity {
                     name = "user_roles_unique_idx")})
     @Column(name = "role")
     @ElementCollection(fetch = FetchType.EAGER) // не ленивая загрузка объекта, дословно "нетерпеливая"
-//    @ElementCollection(fetch = FetchType.LAZY) // а так не подтянет через left outer join
+    //    @ElementCollection(fetch = FetchType.LAZY) // а так не подтянет через left outer join
     //    @Fetch(FetchMode.SUBSELECT)
     @BatchSize(size = 200)
     private Set<Role> roles;
