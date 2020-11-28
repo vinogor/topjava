@@ -57,6 +57,7 @@ public class User extends AbstractNamedEntity {
                     name = "user_roles_unique_idx")})
     @Column(name = "role")
     @ElementCollection(fetch = FetchType.EAGER) // не ленивая загрузка объекта, дословно "нетерпеливая"
+    // поля с ElementCollection всегда CascadeType.All
     //    @ElementCollection(fetch = FetchType.LAZY) // а так не подтянет через left outer join
     //    @Fetch(FetchMode.SUBSELECT)
     @BatchSize(size = 200)
@@ -66,7 +67,7 @@ public class User extends AbstractNamedEntity {
     @Range(min = 10, max = 10000)
     private int caloriesPerDay = DEFAULT_CALORIES_PER_DAY;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")//, cascade = CascadeType.REMOVE, orphanRemoval = true)
     @OrderBy("dateTime DESC")
     private List<Meal> meals;
 

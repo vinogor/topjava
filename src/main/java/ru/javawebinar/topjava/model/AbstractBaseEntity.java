@@ -15,6 +15,9 @@ public abstract class AbstractBaseEntity implements Persistable<Integer> {
 
     @Id
     @SequenceGenerator(name = "global_seq", sequenceName = "global_seq", allocationSize = 1, initialValue = START_SEQ)
+    // для почти корректного создания автогенерацию id при создании DDL скрипта
+    // @Column(name = "id", unique = true, nullable = false, columnDefinition = "integer default nextval('global_seq')")
+
     // см. стратегии генерации Primary Key
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "global_seq")
 
