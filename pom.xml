@@ -84,6 +84,7 @@
                     <configuration>
                         <configfiles>
                             <configfile>
+                                <!-- путь до файла с настройками tomcat -->
                                 <file>src/main/resources/tomcat/context.xml</file>
                                 <todir>conf/Catalina/localhost/</todir>
                                 <tofile>${project.build.finalName}.xml</tofile>
@@ -229,7 +230,7 @@
 
         <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
+            <artifactId>spring-webmvc</artifactId>
         </dependency>
 
         <!--Test-->

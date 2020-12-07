@@ -6,7 +6,11 @@
 
     <display-name>Topjava</display-name>
 
-    <!--  ==== для запуска спринг контекста при старте томката ==== -->
+    <!--  ==== настраиваем КОРНЕВОЙ спринг контекст (НЕ видит дочерний) ==== -->
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+
     <context-param>
         <param-name>spring.profiles.default</param-name>
         <param-value>postgres,datajpa</param-value>
@@ -15,34 +19,27 @@
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>
+            <!-- свой ОТДЕЛЬНЫЙ контекст -->
             classpath:spring/spring-app.xml
             classpath:spring/spring-db.xml
         </param-value>
     </context-param>
 
-    <listener>
-        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-    </listener>
-    <!--  ============================= -->
 
+    <!--  ==== настраиваем ДОЧЕРНИЙ спринг контекст (видит корневой) ==== -->
     <servlet>
-        <servlet-name>userServlet</servlet-name>
-        <servlet-class>ru.javawebinar.topjava.web.UserServlet</servlet-class>
-        <load-on-startup>0</load-on-startup>
+        <servlet-name>mvc-dispatcher</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <!-- тут создастся свой отдельный контекст -->
+            <param-value>classpath:spring/spring-mvc.xml</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet-mapping>
-        <servlet-name>userServlet</servlet-name>
-        <url-pattern>/users</url-pattern>
+        <servlet-name>mvc-dispatcher</servlet-name>
+        <!-- все запросы попадут в этот сервлет -->
+        <url-pattern>/</url-pattern>
     </servlet-mapping>
-
-    <servlet>
-        <servlet-name>mealServlet</servlet-name>
-        <servlet-class>ru.javawebinar.topjava.web.MealServlet</servlet-class>
-        <load-on-startup>0</load-on-startup>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>mealServlet</servlet-name>
-        <url-pattern>/meals</url-pattern>
-    </servlet-mapping>
-
 </web-app>

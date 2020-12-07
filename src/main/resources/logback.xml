@@ -22,6 +22,7 @@
     </appender>
 
     <logger name="ru.javawebinar.topjava" level="debug"/>
+    <logger name="org.springframework.web.servlet" level="debug"/>
 
     <!-- Чтобы посмотреть информацию о транзакциях (открытие/закрытие и пр.) -->
     <logger name="org.springframework.orm.jpa.JpaTransactionManager" level="debug"/>
