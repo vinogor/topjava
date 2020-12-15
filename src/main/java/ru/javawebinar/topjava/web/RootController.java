@@ -2,19 +2,19 @@ package ru.javawebinar.topjava.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
+import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.service.UserService;
-
-import javax.servlet.http.HttpServletRequest;
 
 @Controller
 public class RootController {
 
     // прилетает из корневого контекста
     @Autowired
-    private UserService service;
+    protected UserService userService;
+
+    @Autowired
+    protected MealService mealService;
 
     @GetMapping("/")
     public String root() {
@@ -22,17 +22,4 @@ public class RootController {
         return "index";
     }
 
-    @GetMapping("/users")
-    public String getUsers(Model model) {
-        // заполняем инфой отрибут, который заюзаем в соответствующей вьюхе через ${users}
-        model.addAttribute("users", service.getAll());
-        return "users";
-    }
-
-    @PostMapping("/users")
-    public String setUser(HttpServletRequest request) {
-        int userId = Integer.parseInt(request.getParameter("userId"));
-        SecurityUtil.setAuthUserId(userId);
-        return "redirect:meals";
-    }
 }
