@@ -43,7 +43,9 @@ public class Meal extends AbstractBaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @NotNull
+
+    // TODO: временно отключим. Решим проблему на 10 уроке через Jackson JSON.
+    // @NotNull
     private User user;
 
     public Meal() {

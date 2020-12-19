@@ -102,7 +102,7 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
 
     @Test
     public void createWithException() throws Exception {
-        Assume.assumeTrue(!Arrays.asList(env.getActiveProfiles()).contains(JDBC));
+        // Assume.assumeTrue(!Arrays.asList(env.getActiveProfiles()).contains(JDBC));
 
         // User.name - @NotBlank
         validateRootCause(() -> service.create(new User(null, "  ", "mail@yandex.ru", "password", Role.USER)), ConstraintViolationException.class);

@@ -16,6 +16,8 @@ import ru.javawebinar.topjava.repository.UserRepository;
 import java.lang.reflect.Array;
 import java.util.*;
 
+import static ru.javawebinar.topjava.util.ValidationUtil.validateForJdbc;
+
 @Repository
 @Transactional(readOnly = true)
 public class JdbcUserRepository implements UserRepository {
@@ -82,6 +84,8 @@ public class JdbcUserRepository implements UserRepository {
         //                .addValue("registered", user.getRegistered())
         //                .addValue("enabled", user.isEnabled())
         //                .addValue("caloriesPerDay", user.getCaloriesPerDay());
+
+        validateForJdbc(user);
 
         BeanPropertySqlParameterSource parameterSourceUser = new BeanPropertySqlParameterSource(user);
 
