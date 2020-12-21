@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.to.MealTo;
 import ru.javawebinar.topjava.util.MealsUtil;
-import ru.javawebinar.topjava.web.RootController;
 import ru.javawebinar.topjava.web.SecurityUtil;
 
 import javax.servlet.http.HttpServletRequest;
@@ -23,16 +22,13 @@ import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalTime;
 
 @Controller
 @RequestMapping("/meals")
-public class JspMealController extends RootController {
-
-    // 1.3.3 добавить локализацию и jsp:include в mealForm.jsp / meals.jsp
+public class JspMealController extends AbstractMealController {
 
     @GetMapping
     public String getAll(Model model) {
         model.addAttribute("meals", getTos());
         return "meals";
     }
-
 
     @GetMapping("/delete/{mealId}")
     public String delete(Model model, @PathVariable int mealId) {
@@ -66,9 +62,7 @@ public class JspMealController extends RootController {
         LocalTime startLocalTime = parseLocalTime(startTime);
         LocalTime endLocalTime = parseLocalTime(endTime);
 
-        List<Meal> mealsDateFiltered = mealService.getBetweenInclusive(startLocalDate, endLocalDate, SecurityUtil.authUserId());
-        List<MealTo> filteredTos = MealsUtil.getFilteredTos(mealsDateFiltered, SecurityUtil.authUserCaloriesPerDay(), startLocalTime, endLocalTime);
-        model.addAttribute("meals", filteredTos);
+        model.addAttribute("meals", getMealTos(startLocalDate, endLocalDate, startLocalTime, endLocalTime));
         return "meals";
     }
 

@@ -1,18 +1,26 @@
 package ru.javawebinar.topjava.web.user;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import ru.javawebinar.topjava.web.RootController;
+import ru.javawebinar.topjava.service.MealService;
+import ru.javawebinar.topjava.service.UserService;
 import ru.javawebinar.topjava.web.SecurityUtil;
 
 import javax.servlet.http.HttpServletRequest;
 
 @Controller
 @RequestMapping("/users")
-public class JspUserController extends RootController {
+public class JspUserController {
+
+    @Autowired
+    protected MealService mealService;
+
+    @Autowired
+    protected UserService userService;
 
     @GetMapping
     public String getUsers(Model model) {

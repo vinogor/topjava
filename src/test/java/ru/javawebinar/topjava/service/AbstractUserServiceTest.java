@@ -1,7 +1,9 @@
 package ru.javawebinar.topjava.service;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.dao.DataAccessException;
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
@@ -9,11 +11,13 @@ import ru.javawebinar.topjava.repository.JpaUtil;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import javax.validation.ConstraintViolationException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
 import static org.junit.Assert.assertThrows;
+import static ru.javawebinar.topjava.Profiles.JDBC;
 import static ru.javawebinar.topjava.UserTestData.*;
 
 public abstract class AbstractUserServiceTest extends AbstractServiceTest {
@@ -21,19 +25,20 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
     @Autowired
     protected UserService service;
 
-//    @Autowired(required = false) // не нужно при JDBC
-//    private CacheManager cacheManager;
+    @Autowired(required = false) // не нужно при JDBC
+    private CacheManager cacheManager;
 
     @Autowired(required = false) // не нужно при JDBC
     protected JpaUtil jpaUtil;
 
-//    @Before // инвалидируем кэш
-//    public void setUp() throws Exception {
-//        if (!Arrays.asList(env.getActiveProfiles()).contains(JDBC)) {
-//            cacheManager.getCache("users").clear();
-//            jpaUtil.clear2ndLevelHibernateCache();
-//        }
-//    }
+    // TODO: временно Включил чтобы тесты проходили
+    @Before // инвалидируем кэш
+    public void setUp() throws Exception {
+        if (!Arrays.asList(env.getActiveProfiles()).contains(JDBC)) {
+            cacheManager.getCache("users").clear();
+            jpaUtil.clear2ndLevelHibernateCache();
+        }
+    }
 
     @Test
     public void create() throws Exception {
