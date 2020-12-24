@@ -31,4 +31,10 @@ public class UserTestData {
         updated.setRoles(Set.of(Role.ADMIN, Role.USER));
         return updated;
     }
+
+    public static User getUpdatedOnlyRoles() {
+        User updated = new User(USER);
+        updated.setRoles(Set.of(Role.ADMIN, Role.USER));
+        return updated;
+    }
 }

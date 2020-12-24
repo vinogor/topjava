@@ -13,11 +13,20 @@ import static ru.javawebinar.topjava.UserTestData.*;
 
 @ActiveProfiles(DATAJPA)
 public class DataJpaUserServiceTest extends AbstractUserServiceTest {
+
     @Test
-    public void getWithMeals() throws Exception {
+    public void getUserWithMeals() throws Exception {
         User user = service.getWithMeals(USER_ID);
         USER_MATCHER.assertMatch(user, USER);
-        MealTestData.MEAL_MATCHER.assertMatch(user.getMeals(), MealTestData.MEALS);
+        MealTestData.MEAL_MATCHER.assertMatch(user.getMeals(), MealTestData.USER_MEALS);
+    }
+
+    // TODO: исправить - удвоение сущностей в поле meals, DISTINCT не помог, сделал поле meals типом Set
+    @Test
+    public void getAdminWithMeals() throws Exception {
+        User user = service.getWithMeals(ADMIN_ID);
+        USER_MATCHER.assertMatch(user, ADMIN);
+        MealTestData.MEAL_MATCHER.assertMatch(user.getMeals(), MealTestData.ADMIN_MEALS);
     }
 
     @Test

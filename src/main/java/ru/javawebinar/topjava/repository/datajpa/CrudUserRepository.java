@@ -26,7 +26,8 @@ public interface CrudUserRepository extends JpaRepository<User, Integer> {
     // (формирует запрос через CriteriaApi)
     User getByEmail(String email);
 
+    // TODO: добавление DISTINCT не убирает удвоение записей в meals когда в roles больше 1 записи
     @EntityGraph(attributePaths = {"meals", "roles"})
-    @Query("SELECT u FROM User u WHERE u.id=?1")
+    @Query("SELECT DISTINCT u FROM User u WHERE u.id=?1")
     User getWithMeals(int id);
 }

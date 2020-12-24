@@ -6,8 +6,6 @@ import org.junit.rules.ExternalResource;
 import org.junit.rules.Stopwatch;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.ImportResource;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -20,22 +18,15 @@ import ru.javawebinar.topjava.TimingRules;
 import static org.junit.Assert.assertThrows;
 import static ru.javawebinar.topjava.util.ValidationUtil.getRootCause;
 
-@ContextConfiguration()
+@ContextConfiguration({
+        "classpath:spring/spring-app.xml",
+        "classpath:spring/spring-db.xml",
+        "classpath:spring/test-without-caches.xml"
+})
 @RunWith(SpringRunner.class)
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 @ActiveProfiles(resolver = ActiveDbProfileResolver.class)
 abstract public class AbstractServiceTest {
-
-    @Configuration
-    @ImportResource({
-            "classpath:spring/spring-app.xml",
-            "classpath:spring/spring-db.xml",
-    })
-
-    // TODO: временно отключил чтобы тесты проходили
-//    @Import(TestConfig.class)
-    public static class ContextConfig {
-    }
 
     @Autowired
     protected Environment env;

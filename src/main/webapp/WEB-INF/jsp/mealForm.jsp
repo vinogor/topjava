@@ -14,7 +14,8 @@
     <spring:message code="meal.update" var="update"/>
     <h2>${meal.isNew() ? create : update}</h2>
 
-    <form method="post" action="<%=request.getContextPath()%>/meals/${empty meal.id ? 'create' : 'update'}">
+<%--    <form method="post" action="<%=request.getContextPath()%>/meals/${empty meal.id ? 'create' : 'update'}">--%>
+    <form method="post" action="<%=request.getContextPath()%>/meals/save">
         <input type="hidden" name="id" value="${meal.id}">
         <dl>
             <dt><spring:message code="meal.dateTime"/>:</dt>

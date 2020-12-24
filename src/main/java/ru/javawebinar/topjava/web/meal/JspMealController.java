@@ -15,7 +15,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.Objects;
 
 import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalDate;
 import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalTime;
@@ -24,29 +23,37 @@ import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalTime;
 @RequestMapping("/meals")
 public class JspMealController extends AbstractMealController {
 
-    @GetMapping
-    public String getAll(Model model) {
-        model.addAttribute("meals", getTos());
-        return "meals";
-    }
-
     @GetMapping("/delete/{mealId}")
     public String delete(Model model, @PathVariable int mealId) {
-        mealService.delete(mealId, SecurityUtil.authUserId());
-        model.addAttribute("meals", getTos());
+        int userId = SecurityUtil.authUserId();
+        log.info("GET: delete meal {} for user {}", mealId, userId);
+        mealService.delete(mealId, userId);
+        model.addAttribute("meals", getTos(userId));
         return "meals";
     }
 
-    @GetMapping("/update/{mealId}")
-    public String update(Model model, @PathVariable int mealId) {
-        Meal meal = mealService.get(mealId, SecurityUtil.authUserId());
-        model.addAttribute("meal", meal);
-        return "mealForm";
+    @GetMapping
+    public String getAll(Model model) {
+        int userId = SecurityUtil.authUserId();
+        log.info("GET: getAll for user {}", userId);
+        model.addAttribute("meals", getTos(userId));
+        return "meals";
     }
 
     @GetMapping("/create")
     public String create(Model model) {
+        int userId = SecurityUtil.authUserId();
         Meal meal = new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000);
+        log.info("GET: create {} for user {}", meal, userId);
+        model.addAttribute("meal", meal);
+        return "mealForm";
+    }
+
+    @GetMapping("/update/{mealId}")
+    public String update(Model model, @PathVariable int mealId) {
+        int userId = SecurityUtil.authUserId();
+        Meal meal = mealService.get(mealId, SecurityUtil.authUserId());
+        log.info("GET: update {} for user {}", meal, userId);
         model.addAttribute("meal", meal);
         return "mealForm";
     }
@@ -66,28 +73,27 @@ public class JspMealController extends AbstractMealController {
         return "meals";
     }
 
-    @PostMapping("/update")
-    public String update(HttpServletRequest request, Model model) throws UnsupportedEncodingException {
+    @PostMapping("/save")
+    public String save(HttpServletRequest request, Model model) throws UnsupportedEncodingException {
         request.setCharacterEncoding("UTF-8");
         Meal meal = getNewMeal(request);
-        String paramId = Objects.requireNonNull(request.getParameter("id"));
-        meal.setId(Integer.parseInt(paramId));
-        mealService.update(meal, SecurityUtil.authUserId());
-        model.addAttribute("meals", getTos());
+        String paramId = request.getParameter("id");
+        int userId = SecurityUtil.authUserId();
+
+        if (paramId == null || paramId.isEmpty()) {
+            log.info("POST: create {} for user {}", meal, userId);
+            mealService.create(meal, userId);
+        } else {
+            log.info("POST: update {} for user {}", meal, userId);
+            meal.setId(Integer.parseInt(paramId));
+            mealService.update(meal, userId);
+        }
+        model.addAttribute("meals", getTos(userId));
         return "meals";
     }
 
-    @PostMapping("/create")
-    public String create(HttpServletRequest request, Model model) throws UnsupportedEncodingException {
-        request.setCharacterEncoding("UTF-8");
-        Meal meal = getNewMeal(request);
-        mealService.create(meal, SecurityUtil.authUserId());
-        model.addAttribute("meals", getTos());
-        return "meals";
-    }
-
-    private List<MealTo> getTos() {
-        return MealsUtil.getTos(mealService.getAll(SecurityUtil.authUserId()), SecurityUtil.authUserCaloriesPerDay());
+    private List<MealTo> getTos(int userId) {
+        return MealsUtil.getTos(mealService.getAll(userId), SecurityUtil.authUserCaloriesPerDay());
     }
 
     private Meal getNewMeal(HttpServletRequest request) {

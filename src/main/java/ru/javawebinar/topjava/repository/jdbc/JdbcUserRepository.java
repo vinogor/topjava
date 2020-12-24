@@ -25,24 +25,12 @@ import static ru.javawebinar.topjava.util.ValidationUtil.validateForJdbc;
 public class JdbcUserRepository implements UserRepository {
 
     private static final ResultSetExtractor<List<User>> EXTRACTOR = rs -> {
-
-        List<User> users = new LinkedList<>(); // если из базы приходит уже в отсортированном виде
-        Set<Role> roles = new HashSet<>();
-        int idPrev = 0;
+        Map<Integer, User> users = new TreeMap<>(Collections.reverseOrder());
         User user = null;
 
         while (rs.next()) {
             int id = rs.getInt("id");
-            if (idPrev != id) {
-                idPrev = id;
-                // сохр роли предыдущего юзера, добавили/обнулили роли
-                if (user != null) {
-                    user.setRoles(roles);
-                    users.add(0, user);
-                    roles = new HashSet<>();
-                }
-
-                // новый юзер
+            if (!users.containsKey(id)) {
                 user = new User(
                         rs.getInt("id"),
                         rs.getString("name"),
@@ -51,19 +39,12 @@ public class JdbcUserRepository implements UserRepository {
                         rs.getInt("calories_per_day"),
                         rs.getBoolean("enabled"),
                         rs.getDate("registered"),
-                        null);
-
+                        new HashSet<>());
+                users.put(id, user);
             }
-            roles.add(Role.valueOf(rs.getString("role")));
-
+            user.getRoles().add(Role.valueOf(rs.getString("role")));
         }
-
-        if (user != null) {
-            user.setRoles(roles);
-            users.add(0, user);
-        }
-
-        return users;
+        return new ArrayList<>(users.values());
     };
 
     private final JdbcTemplate jdbcTemplate;
@@ -98,10 +79,10 @@ public class JdbcUserRepository implements UserRepository {
 
         BeanPropertySqlParameterSource parameterSourceUser = new BeanPropertySqlParameterSource(user);
 
-        Integer id;
+        int id;
 
         if (user.isNew()) {
-            id = (Integer) insertUser.executeAndReturnKey(parameterSourceUser);
+            id = (int) insertUser.executeAndReturnKey(parameterSourceUser);
             user.setId(id);
 
         } else {
@@ -113,22 +94,21 @@ public class JdbcUserRepository implements UserRepository {
             if (updateUsers == 0) {
                 return null;
             }
-            jdbcTemplate.update("DELETE FROM user_roles WHERE user_id=?", id);
+            jdbcTemplate.update("DELETE FROM user_roles WHERE user_id = ?", id);
         }
 
-        Set<Role> roles = user.getRoles();
-        int size = roles.size();
-        Iterator<Role> iterator = roles.iterator();
-        jdbcTemplate.batchUpdate("INSERT INTO user_roles VALUES (" + id + ", ?)", new BatchPreparedStatementSetter() {
+        List<Role> roles = new ArrayList<>(user.getRoles());
+        jdbcTemplate.batchUpdate("INSERT INTO user_roles(user_id, role) VALUES (?, ?)", new BatchPreparedStatementSetter() {
 
             @Override
             public void setValues(PreparedStatement ps, int i) throws SQLException {
-                ps.setString(1, iterator.next().toString());
+                ps.setInt(1, id);
+                ps.setString(2, roles.get(i).toString());
             }
 
             @Override
             public int getBatchSize() {
-                return size;
+                return roles.size();
             }
         });
 

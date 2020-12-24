@@ -25,17 +25,16 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
     @Autowired
     protected UserService service;
 
-    @Autowired(required = false) // не нужно при JDBC
+    @Autowired
     private CacheManager cacheManager;
 
-    @Autowired(required = false) // не нужно при JDBC
+    @Autowired (required = false) // не нужно при JDBC
     protected JpaUtil jpaUtil;
 
-    // TODO: временно Включил чтобы тесты проходили
     @Before // инвалидируем кэш
     public void setUp() throws Exception {
+        cacheManager.getCache("users").clear();
         if (!Arrays.asList(env.getActiveProfiles()).contains(JDBC)) {
-            cacheManager.getCache("users").clear();
             jpaUtil.clear2ndLevelHibernateCache();
         }
     }
@@ -92,6 +91,13 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
         User updated = getUpdated();
         service.update(updated);
         USER_MATCHER.assertMatch(service.get(USER_ID), getUpdated());
+    }
+
+    @Test
+    public void updateOnlyRoles() throws Exception {
+        User updated = getUpdatedOnlyRoles();
+        service.update(updated);
+        USER_MATCHER.assertMatch(service.get(USER_ID), getUpdatedOnlyRoles());
     }
 
     @Test
