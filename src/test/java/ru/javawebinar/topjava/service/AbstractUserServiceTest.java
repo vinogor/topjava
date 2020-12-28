@@ -22,13 +22,13 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
     @Autowired
     protected UserService service;
 
-    @Autowired
-    private CacheManager cacheManager;
+//    @Autowired
+//    private CacheManager cacheManager;
 
-    @Before // инвалидируем кэш
-    public void setUp() throws Exception {
-        cacheManager.getCache("users").clear();
-    }
+//    @Before // инвалидируем кэш
+//    public void setUp() throws Exception {
+//        cacheManager.getCache("users").clear();
+//    }
 
     @Test
     public void create() throws Exception {
