@@ -24,4 +24,17 @@ public abstract class AbstractMealController {
         return MealsUtil.getFilteredTos(mealsDateFiltered, SecurityUtil.authUserCaloriesPerDay(), startLocalTime, endLocalTime);
     }
 
+    protected int deleteById(int mealId) {
+        int userId = SecurityUtil.authUserId();
+        log.info("delete meal {} for user {}", mealId, userId);
+        mealService.delete(mealId, userId);
+        return userId;
+    }
+
+    protected List<MealTo> getAllTos() {
+        int userId = SecurityUtil.authUserId();
+        log.info("getAll for user {}", userId);
+        return MealsUtil.getTos(mealService.getAll(userId), SecurityUtil.authUserCaloriesPerDay());
+    }
+
 }

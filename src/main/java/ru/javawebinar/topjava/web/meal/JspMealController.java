@@ -4,7 +4,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.to.MealTo;
 import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.web.SecurityUtil;
 
@@ -14,7 +13,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
 
 import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalDate;
 import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalTime;
@@ -25,18 +23,13 @@ public class JspMealController extends AbstractMealController {
 
     @GetMapping("/delete/{mealId}")
     public String delete(Model model, @PathVariable int mealId) {
-        int userId = SecurityUtil.authUserId();
-        log.info("GET: delete meal {} for user {}", mealId, userId);
-        mealService.delete(mealId, userId);
-        model.addAttribute("meals", getTos(userId));
+        model.addAttribute("meals", MealsUtil.getTos(mealService.getAll(deleteById(mealId)), SecurityUtil.authUserCaloriesPerDay()));
         return "meals";
     }
 
     @GetMapping
     public String getAll(Model model) {
-        int userId = SecurityUtil.authUserId();
-        log.info("GET: getAll for user {}", userId);
-        model.addAttribute("meals", getTos(userId));
+        model.addAttribute("meals", getAllTos());
         return "meals";
     }
 
@@ -88,12 +81,8 @@ public class JspMealController extends AbstractMealController {
             meal.setId(Integer.parseInt(paramId));
             mealService.update(meal, userId);
         }
-        model.addAttribute("meals", getTos(userId));
+        model.addAttribute("meals", MealsUtil.getTos(mealService.getAll(userId), SecurityUtil.authUserCaloriesPerDay()));
         return "meals";
-    }
-
-    private List<MealTo> getTos(int userId) {
-        return MealsUtil.getTos(mealService.getAll(userId), SecurityUtil.authUserCaloriesPerDay());
     }
 
     private Meal getNewMeal(HttpServletRequest request) {
