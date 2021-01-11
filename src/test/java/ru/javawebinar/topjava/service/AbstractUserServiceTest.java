@@ -70,8 +70,8 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
     // см 3й способ в JpaUserRepository#delete()
     @Test
     public void get() throws Exception {
-        User user = service.get(USER_ID);
-        USER_MATCHER.assertMatch(user, USER);
+        User user = service.get(ADMIN_ID);
+        USER_MATCHER.assertMatch(user, ADMIN);
     }
 
     @Test
