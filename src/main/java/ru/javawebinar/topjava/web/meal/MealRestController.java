@@ -10,7 +10,9 @@ import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.to.MealTo;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 import static org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME;
@@ -26,7 +28,6 @@ public class MealRestController extends AbstractMealController {
     public Meal get(@PathVariable int id) {
         return super.get(id);
     }
-
 
     // TODO: если русские символы в поле "description" - вылетает ошибка
     //  "...Invalid UTF-8 middle byte 0xf6..."
@@ -58,14 +59,24 @@ public class MealRestController extends AbstractMealController {
         return super.getAll();
     }
 
-    // пример запроса в строке браузера:
     // http://localhost:8080/topjava_war_exploded/rest/user/by?start=2020-01-01T08%3A50&end=2020-01-31T23%3A58
     @GetMapping("/by")
     public List<MealTo> getBetweenDateTime(@RequestParam @DateTimeFormat(iso = DATE_TIME) LocalDateTime start,
-                                             @RequestParam @DateTimeFormat(iso = DATE_TIME) LocalDateTime end
+                                           @RequestParam @DateTimeFormat(iso = DATE_TIME) LocalDateTime end
     ) {
-        // TODO: обработка null-ов
         return super.getBetween(start.toLocalDate(), start.toLocalTime(), end.toLocalDate(), end.toLocalTime());
+    }
+
+    // для строки браузера
+    // http://localhost:8080/topjava_war_exploded/rest/user/byNullSafe?startDate=2020-01-01&startTime=08%3A50&endDate=2020-01-31&endTime=23%3A58
+    // http://localhost:8080/topjava_war_exploded/rest/user/byNullSafe?startDate=2020-01-01&startTime=08%3A50&endDate=2020-01-31&endTime=23%3A58
+    @GetMapping("/byNullSafe")
+    public List<MealTo> getBetweenDateTime2(@RequestParam LocalDate startDate,
+                                            @RequestParam LocalTime startTime,
+                                            @RequestParam LocalDate endDate,
+                                            @RequestParam LocalTime endTime
+    ) {
+        return super.getBetween(startDate, startTime, endDate, endTime);
     }
 
 }
