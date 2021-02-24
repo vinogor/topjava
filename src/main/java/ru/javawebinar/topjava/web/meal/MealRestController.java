@@ -68,7 +68,7 @@ public class MealRestController extends AbstractMealController {
     }
 
     // для строки браузера
-    // http://localhost:8080/topjava_war_exploded/rest/user/byNullSafe?startDate=2020-01-01&startTime=08%3A50&endDate=2020-01-31&endTime=23%3A58
+    // http://localhost:8080/topjava_war_exploded/rest/user/byNullSafe?startDate=&startTime=00%3A01&endDate=&endTime=
     // http://localhost:8080/topjava_war_exploded/rest/user/byNullSafe?startDate=2020-01-01&startTime=08%3A50&endDate=2020-01-31&endTime=23%3A58
     @GetMapping("/byNullSafe")
     public List<MealTo> getBetweenDateTime2(@RequestParam LocalDate startDate,
